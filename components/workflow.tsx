@@ -1,278 +1,337 @@
 import type { NextPage } from "next";
+import { memo } from "react";
 import CodeSnippet from "./code-snippet";
-import styles from "./workflow.module.css";
 
-const Workflow: NextPage = () => {
+const Workflow: NextPage = memo(() => {
   return (
-    <div className={styles.section}>
-      <div className={styles.container}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.content}>
-            <div className={styles.textAndSupportingText}>
-              <div className={styles.text}> workflow</div>
-              <div className={styles.supportingText}>
+    <div className="flex-1 flex flex-col items-center justify-start py-8 px-0 box-border min-w-[480px] max-w-full ml-[-2px] text-left text-sm text-colors-text-text-quaternary-500 font-text-sm-semibold mq675:min-w-full mq450:pb-5 mq450:box-border mq800:pb-[21px] mq800:box-border">
+      <div className="self-stretch flex flex-col items-start justify-start py-0 px-container-padding-desktop box-border gap-[9px] max-w-full">
+        <div className="self-stretch flex flex-col items-start justify-start gap-[20px] max-w-full text-lg text-colors-text-text-primary-900">
+          <div className="self-stretch flex flex-row items-start justify-start gap-[16px] max-w-full">
+            <div className="flex-1 flex flex-col items-start justify-center gap-[4px] max-w-full">
+              <div className="self-stretch relative leading-[28px] font-semibold">
+                {" "}
+                workflow
+              </div>
+              <div className="self-stretch h-5 relative text-sm leading-[20px] text-component-colors-components-buttons-tertiary-button-tertiary-fg hidden overflow-hidden text-ellipsis whitespace-nowrap">
                 Manage your team members and their account permissions here.
               </div>
             </div>
-            <div className={styles.actions}>
-              <div className={styles.button}>
+            <div className="h-10 hidden flex-row items-center justify-start gap-[12px] max-w-full text-sm text-component-colors-components-buttons-tertiary-button-tertiary-fg">
+              <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
                 <img
-                  className={styles.placeholderIcon}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder.svg"
                 />
-                <div className={styles.textPadding}>
-                  <div className={styles.text1}>Tertiary</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    Tertiary
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon1}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder.svg"
                 />
               </div>
-              <div className={styles.button1}>
+              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-color-button-secondary-color-border">
                 <img
-                  className={styles.placeholderIcon2}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder1.svg"
                 />
-                <div className={styles.textPadding1}>
-                  <div className={styles.text2}>Secondary</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    Secondary
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon3}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder1.svg"
                 />
               </div>
-              <div className={styles.button2}>
+              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden flex flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
                 <img
-                  className={styles.placeholderIcon4}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
-                <div className={styles.textPadding2}>
-                  <div className={styles.text3}>View in Schema</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    View in Schema
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon5}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
               </div>
-              <div className={styles.button3}>
+              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
                 <img
-                  className={styles.placeholderIcon6}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder3.svg"
                 />
-                <div className={styles.textPadding3}>
-                  <div className={styles.text4}>Primary</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    Primary
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon7}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder3.svg"
                 />
               </div>
             </div>
-            <div className={styles.dropdown}>
+            <div className="hidden flex-col items-start justify-start">
               <img
-                className={styles.dotsVerticalIcon}
+                className="w-5 h-5 relative overflow-hidden shrink-0"
                 alt=""
                 src="/dotsvertical.svg"
               />
             </div>
           </div>
-          <img className={styles.dividerIcon} alt="" src="/divider2.svg" />
+          <img
+            className="self-stretch relative max-w-full overflow-hidden max-h-full hidden z-[0]"
+            alt=""
+            src="/divider2.svg"
+          />
         </div>
-        <div className={styles.content1}>
-          <div className={styles.horizontalTabs}>
-            <div className={styles.tabs}>
-              <div className={styles.tabButtonBase}>
-                <div className={styles.text5}>Step1</div>
+        <div className="self-stretch flex flex-row items-start justify-start py-0 px-0 box-border gap-[16px] max-w-full mq675:flex-wrap">
+          <div className="h-10 w-[355px] box-border flex flex-col items-start justify-start pt-[11px] px-0 pb-0 max-w-full shrink-0 border-b-[1px] border-solid border-colors-border-border-secondary">
+            <div className="w-[108px] flex flex-row items-start justify-start gap-[12px]">
+              <div className="flex flex-row items-center justify-center pt-0 px-spacing-xs pb-[9px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-b-[2px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
+                <div className="relative leading-[20px] font-semibold inline-block min-w-[39px]">
+                  Step1
+                </div>
               </div>
               <input
-                className={styles.tabButtonBase1}
+                className="w-full [border:none] [outline:none] bg-[transparent] h-8 flex-1 flex flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg box-border font-text-sm-semibold font-semibold text-sm text-colors-text-text-quaternary-500 min-w-[29px]"
                 placeholder="Step2"
                 type="text"
               />
-              <div className={styles.tabButtonBase2}>
-                <div className={styles.text6}>Violations</div>
-              </div>
-              <div className={styles.tabButtonBase3}>
-                <div className={styles.text7}>About the client</div>
-              </div>
-              <div className={styles.tabButtonBase4}>
-                <div className={styles.text8}>Notes</div>
-              </div>
-              <div className={styles.tabButtonBase5}>
-                <div className={styles.text9}>Billing</div>
-              </div>
-              <div className={styles.tabButtonBase6}>
-                <div className={styles.text10}>Email</div>
-              </div>
-              <div className={styles.tabButtonBase7}>
-                <div className={styles.text11}>Notifications</div>
-                <div className={styles.badge}>
-                  <div className={styles.text12}>2</div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-[3px] pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Violations
                 </div>
               </div>
-              <div className={styles.tabButtonBase8}>
-                <div className={styles.text13}>Integrations</div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold whitespace-nowrap">
+                  About the client
+                </div>
               </div>
-              <div className={styles.tabButtonBase9}>
-                <div className={styles.text14}>API</div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Notes
+                </div>
+              </div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Billing
+                </div>
+              </div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Email
+                </div>
+              </div>
+              <div className="h-8 hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg box-border gap-[8px]">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Notifications
+                </div>
+                <div className="h-[22px] rounded-radius-full bg-colors-background-bg-secondary box-border flex flex-row items-center justify-start py-spacing-xxs px-[7px] text-center text-xs text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-colors-border-border-secondary">
+                  <div className="self-stretch relative leading-[18px] font-medium">
+                    2
+                  </div>
+                </div>
+              </div>
+              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Integrations
+                </div>
+              </div>
+              <div className="self-stretch hidden flex-row items-center justify-start pt-0 px-spacing-xs pb-spacing-lg">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  API
+                </div>
               </div>
             </div>
           </div>
-          <div className={styles.actions1}>
-            <div className={styles.button4}>
+          <div className="w-[214px] flex flex-row items-center justify-start gap-[14px] shrink-0 text-component-colors-components-buttons-tertiary-button-tertiary-fg">
+            <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
               <img
-                className={styles.placeholderIcon8}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder.svg"
               />
-              <div className={styles.textPadding4}>
-                <div className={styles.text15}>Tertiary</div>
+              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Tertiary
+                </div>
               </div>
               <img
-                className={styles.placeholderIcon9}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder.svg"
               />
             </div>
-            <div className={styles.button5}>
+            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-color-button-secondary-color-border">
               <img
-                className={styles.placeholderIcon10}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder1.svg"
               />
-              <div className={styles.textPadding5}>
-                <div className={styles.text16}>Secondary</div>
+              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Secondary
+                </div>
               </div>
               <img
-                className={styles.placeholderIcon11}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder1.svg"
               />
             </div>
-            <div className={styles.button6}>
+            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
               <img
-                className={styles.placeholderIcon12}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder2.svg"
               />
-              <div className={styles.textPadding6}>
-                <div className={styles.text17}>View in Schema</div>
+              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  View in Schema
+                </div>
               </div>
               <img
-                className={styles.placeholderIcon13}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder2.svg"
               />
             </div>
-            <div className={styles.button7}>
+            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
               <img
-                className={styles.placeholderIcon14}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder3.svg"
               />
-              <div className={styles.textPadding7}>
-                <div className={styles.text18}>Primary</div>
+              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                <div className="self-stretch relative leading-[20px] font-semibold">
+                  Primary
+                </div>
               </div>
               <img
-                className={styles.placeholderIcon15}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder3.svg"
               />
             </div>
-            <button className={styles.button8}>
+            <button className="cursor-pointer py-2 px-[13px] bg-colors-background-bg-primary shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md overflow-hidden flex flex-row items-center justify-center gap-[4px] border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
               <img
-                className={styles.plusCircleIcon}
+                className="h-5 w-5 relative overflow-hidden shrink-0 min-h-[20px]"
                 alt=""
                 src="/pluscircle.svg"
               />
-              <div className={styles.textPadding8}>
-                <div className={styles.text19}>Create Step</div>
+              <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                <div className="relative text-sm leading-[20px] font-semibold font-text-sm-semibold text-component-colors-components-buttons-secondary-button-secondary-fg text-left inline-block min-w-[81px]">
+                  Create Step
+                </div>
               </div>
               <img
-                className={styles.placeholderIcon16}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder2.svg"
               />
             </button>
           </div>
-          <div className={styles.dropdown1}>
+          <div className="hidden flex-col items-start justify-start">
             <img
-              className={styles.dotsVerticalIcon1}
+              className="w-5 h-5 relative overflow-hidden shrink-0"
               alt=""
               src="/dotsvertical.svg"
             />
           </div>
         </div>
-        <div className={styles.textPadding9}>
-          <div className={styles.text20}>提示词</div>
+        <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs text-component-colors-components-buttons-secondary-button-secondary-fg">
+          <div className="relative leading-[20px] font-semibold inline-block min-w-[42px]">
+            提示词
+          </div>
         </div>
         <CodeSnippet />
-        <div className={styles.sectionFooter}>
-          <img className={styles.dividerIcon1} alt="" src="/divider3.svg" />
-          <div className={styles.content2}>
-            <div className={styles.buttonsbutton}>
+        <div className="self-stretch overflow-hidden flex flex-col items-center justify-center py-0 px-5 gap-[9px] text-component-colors-components-buttons-tertiary-button-tertiary-fg">
+          <img
+            className="w-[177px] h-px relative hidden"
+            alt=""
+            src="/divider3.svg"
+          />
+          <div className="flex flex-row items-center justify-end gap-[23px]">
+            <div className="h-5 overflow-hidden hidden flex-row items-center justify-center gap-[6px]">
               <img
-                className={styles.placeholderIcon17}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder.svg"
               />
-              <div className={styles.text21}>Learn more</div>
+              <div className="self-stretch relative leading-[20px] font-semibold whitespace-nowrap">
+                Learn more
+              </div>
               <img
-                className={styles.placeholderIcon18}
+                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                 alt=""
                 src="/placeholder.svg"
               />
             </div>
-            <div className={styles.actions2}>
-              <div className={styles.button9}>
+            <div className="flex flex-row items-center justify-end gap-[12px]">
+              <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
                 <img
-                  className={styles.placeholderIcon19}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder.svg"
                 />
-                <div className={styles.textPadding10}>
-                  <div className={styles.text22}>Tertiary</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    Tertiary
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon20}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder.svg"
                 />
               </div>
-              <div className={styles.button10}>
+              <div className="shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden flex flex-row items-center justify-center py-2 px-[66px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
                 <img
-                  className={styles.magicWand02Icon}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 min-h-[20px]"
                   alt=""
                   src="/magicwand02.svg"
                 />
-                <div className={styles.textPadding11}>
-                  <div className={styles.text23}>AI</div>
+                <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="relative leading-[20px] font-semibold inline-block min-w-[14px]">
+                    AI
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon21}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder4.svg"
                 />
               </div>
-              <div className={styles.button11}>
+              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
                 <img
-                  className={styles.placeholderIcon22}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder3.svg"
                 />
-                <div className={styles.textPadding12}>
-                  <div className={styles.text24}>Primary</div>
+                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="self-stretch relative leading-[20px] font-semibold">
+                    Primary
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon23}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder3.svg"
                 />
@@ -280,16 +339,18 @@ const Workflow: NextPage = () => {
             </div>
           </div>
         </div>
-        <div className={styles.textPadding13}>
-          <div className={styles.text25}>展示效果</div>
+        <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs text-component-colors-components-buttons-secondary-button-secondary-fg">
+          <div className="relative leading-[20px] font-semibold inline-block min-w-[56px]">
+            展示效果
+          </div>
         </div>
-        <div className={styles.content3}>
+        <div className="w-[507px] overflow-x-auto flex flex-row items-start justify-start py-0 px-0 box-border gap-[30px] max-w-full">
           <CodeSnippet
             propAlignSelf="unset"
             propHeight="405px"
             propWidth="244px"
             propHeight1="405px"
-            propPadding="var(--spacing-3xl) var(--spacing-3xl) var(--spacing-4xl)"
+            propPadding="24px 24px 32px"
             propMaxHeight="667px"
           />
           <CodeSnippet
@@ -297,13 +358,13 @@ const Workflow: NextPage = () => {
             propHeight="405px"
             propWidth="273px"
             propHeight1="405px"
-            propPadding="var(--spacing-3xl) var(--spacing-3xl) var(--padding-mid)"
+            propPadding="24px 24px 17px"
             propMaxHeight="556px"
           />
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default Workflow;

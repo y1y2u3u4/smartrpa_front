@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   TextField,
   InputAdornment,
@@ -13,9 +13,8 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import styles from "./section.module.css";
 
-const Section: NextPage = () => {
+const Section: NextPage = memo(() => {
   const [tableCellDateTimePickerValue, setTableCellDateTimePickerValue] =
     useState(null);
   const [tableCellDateTimePicker1Value, setTableCellDateTimePicker1Value] =
@@ -34,17 +33,19 @@ const Section: NextPage = () => {
     useState(null);
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.content}>
-            <div className={styles.textAndSupportingText}>
-              <div className={styles.text}>文档内容</div>
-              <div className={styles.supportingText}>
+      <div className="w-[557px] box-border flex flex-col items-start justify-start py-8 pr-0 pl-[31px] gap-[24px] min-w-[480px] max-w-full text-left text-lg text-colors-text-text-primary-900 font-text-sm-semibold border-r-[1px] border-solid border-colors-border-border-secondary mq675:min-w-full mq450:pt-5 mq450:pb-5 mq450:box-border mq800:pt-[21px] mq800:pb-[21px] mq800:box-border">
+        <div className="w-[489px] flex flex-col items-start justify-start py-0 pr-5 pl-0 box-border gap-[20px] max-w-full">
+          <div className="self-stretch flex flex-row items-start justify-start gap-[16px] mq450:flex-wrap">
+            <div className="flex-1 flex flex-col items-start justify-center py-2 px-0 box-border gap-[4px] min-w-[147px]">
+              <div className="self-stretch relative leading-[28px] font-semibold">
+                文档内容
+              </div>
+              <div className="self-stretch h-5 relative text-sm leading-[20px] text-component-colors-components-buttons-tertiary-button-tertiary-fg hidden overflow-hidden text-ellipsis whitespace-nowrap">
                 Manage your team members and their account permissions here.
               </div>
             </div>
             <TextField
-              className={styles.inputDropdown}
+              className="[border:none] bg-[transparent] h-11 flex-1 shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] font-text-sm-semibold text-base text-colors-text-text-quaternary-500 min-w-[147px] max-w-[320px]"
               placeholder="Search"
               variant="outlined"
               InputProps={{
@@ -66,14 +67,18 @@ const Section: NextPage = () => {
               }}
             />
           </div>
-          <img className={styles.dividerIcon} alt="" src="/divider1.svg" />
+          <img
+            className="self-stretch relative max-w-full overflow-hidden max-h-full hidden z-[0]"
+            alt=""
+            src="/divider1.svg"
+          />
         </div>
-        <div className={styles.table}>
-          <div className={styles.tableHeaderCell}>
-            <input className={styles.checkbox} type="checkbox" />
-            <div className={styles.tableHeaderWrapper}>
+        <div className="self-stretch h-[670px] relative shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-xl bg-colors-background-bg-primary box-border overflow-hidden shrink-0 max-w-full text-sm border-[1px] border-solid border-colors-border-border-secondary mq450:h-auto mq450:min-h-[670]">
+          <div className="absolute top-[0px] left-[0px] bg-colors-background-bg-secondary box-border w-[150.5px] flex flex-row items-start justify-start pt-spacing-lg px-spacing-3xl pb-2.5 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="w-[61px] flex flex-col items-start justify-start pt-px px-0 pb-0 box-border">
               <FormControl
-                className={styles.tableHeader}
+                className="self-stretch h-[18px] font-text-sm-semibold font-medium text-xs text-component-colors-components-buttons-tertiary-button-tertiary-fg"
                 variant="standard"
                 sx={{
                   borderTopWidth: "1px",
@@ -142,123 +147,177 @@ const Section: NextPage = () => {
               </FormControl>
             </div>
           </div>
-          <div className={styles.tableCell}>
-            <input className={styles.checkbox1} type="checkbox" />
-            <div className={styles.text1}>INV-3066</div>
-          </div>
-          <div className={styles.tableCell1}>
-            <input className={styles.checkbox2} type="checkbox" />
-            <div className={styles.text2}>INV-3065</div>
-          </div>
-          <div className={styles.tableCell2}>
-            <input className={styles.checkbox3} type="checkbox" />
-            <div className={styles.text3}>INV-3064</div>
-          </div>
-          <div className={styles.tableCell3}>
-            <input className={styles.checkbox4} type="checkbox" />
-            <div className={styles.text4}>INV-3063</div>
-          </div>
-          <div className={styles.tableCell4}>
-            <input className={styles.checkbox5} type="checkbox" />
-            <div className={styles.text5}>INV-3062</div>
-          </div>
-          <div className={styles.tableCell5}>
-            <input className={styles.checkbox6} type="checkbox" />
-            <div className={styles.text6}>INV-3061</div>
-          </div>
-          <div className={styles.tableCell6}>
-            <input className={styles.checkbox7} type="checkbox" />
-            <div className={styles.text7}>INV-3060</div>
-          </div>
-          <div className={styles.tableCell7}>
-            <input className={styles.checkbox8} type="checkbox" />
-            <div className={styles.text8}>INV-3060</div>
-          </div>
-          <div className={styles.column}>
-            <div className={styles.tableHeaderCell1}>
-              <div className={styles.tableHeader1}>
-                <div className={styles.text9}>Action</div>
-              </div>
-            </div>
-            <div className={styles.tableCell8}>
-              <div className={styles.text10}>Signup complete</div>
-            </div>
-            <div className={styles.tableCell9}>
-              <div className={styles.text11}>Signup complete</div>
-            </div>
-            <div className={styles.tableCell10}>
-              <div className={styles.text12}>Source deleted</div>
-            </div>
-            <div className={styles.tableCell11}>
-              <div className={styles.text13}>Signup complete</div>
-            </div>
-            <div className={styles.tableCell12}>
-              <div className={styles.text14}>Signup complete</div>
-            </div>
-            <div className={styles.tableCell13}>
-              <div className={styles.text15}>Source deleted</div>
-            </div>
-            <div className={styles.tableCell14}>
-              <div className={styles.text16}>Source deleted</div>
-            </div>
-            <div className={styles.tableCell15}>
-              <div className={styles.text17}>Source deleted</div>
+          <div className="absolute top-[44px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3066
             </div>
           </div>
-          <div className={styles.column1}>
-            <div className={styles.tableHeaderCell2}>
-              <div className={styles.tableHeader2}>
-                <div className={styles.text18}>Status</div>
+          <div className="absolute top-[116px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3065
+            </div>
+          </div>
+          <div className="absolute top-[188px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3064
+            </div>
+          </div>
+          <div className="absolute top-[260px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3063
+            </div>
+          </div>
+          <div className="absolute top-[332px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3062
+            </div>
+          </div>
+          <div className="absolute top-[404px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[64px]">
+              INV-3061
+            </div>
+          </div>
+          <div className="absolute top-[476px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3060
+            </div>
+          </div>
+          <div className="absolute top-[548px] left-[0px] box-border w-[150.5px] flex flex-row items-start justify-start pt-[26px] px-spacing-3xl pb-6 gap-[12px] border-b-[1px] border-solid border-colors-border-border-secondary">
+            <input className="m-0 h-5 w-5" type="checkbox" />
+            <div className="relative leading-[20px] font-medium inline-block min-w-[66px]">
+              INV-3060
+            </div>
+          </div>
+          <div className="absolute top-[0px] left-[150.5px] w-[150.5px] flex flex-col items-start justify-start">
+            <div className="self-stretch bg-colors-background-bg-secondary flex flex-row items-center justify-start pt-[13px] px-6 pb-[11px] text-xs text-component-colors-components-buttons-tertiary-button-tertiary-fg border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex flex-row items-center justify-start">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[37px]">
+                  Action
+                </div>
               </div>
             </div>
-            <div className={styles.tableCell16}>
-              <div className={styles.badge}>
-                <div className={styles.text19}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[13.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[113px]">
+                Signup complete
               </div>
             </div>
-            <div className={styles.tableCell17}>
-              <div className={styles.badge1}>
-                <div className={styles.text20}>Track</div>
+            <div className="bg-colors-background-bg-secondary flex flex-row items-center justify-start pt-[26px] pb-6 pr-[13.5px] pl-spacing-3xl whitespace-nowrap border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[113px]">
+                Signup complete
               </div>
             </div>
-            <div className={styles.tableCell18}>
-              <div className={styles.badge2}>
-                <div className={styles.text21}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[24.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[102px]">
+                Source deleted
               </div>
             </div>
-            <div className={styles.tableCell19}>
-              <div className={styles.badge3}>
-                <div className={styles.text22}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[13.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[113px]">
+                Signup complete
               </div>
             </div>
-            <div className={styles.tableCell20}>
-              <div className={styles.badge4}>
-                <div className={styles.text23}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[13.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[113px]">
+                Signup complete
               </div>
             </div>
-            <div className={styles.tableCell21}>
-              <div className={styles.badge5}>
-                <div className={styles.text24}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[24.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[102px]">
+                Source deleted
               </div>
             </div>
-            <div className={styles.tableCell22}>
-              <div className={styles.badge6}>
-                <div className={styles.text25}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[24.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[102px]">
+                Source deleted
               </div>
             </div>
-            <div className={styles.tableCell23}>
-              <div className={styles.badge7}>
-                <div className={styles.text26}>Track</div>
+            <div className="flex flex-row items-center justify-start pt-[26px] pb-6 pr-[24.5px] pl-spacing-3xl border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="relative leading-[20px] font-medium inline-block min-w-[102px]">
+                Source deleted
               </div>
             </div>
           </div>
-          <div className={styles.column2}>
-            <div className={styles.tableHeaderCell3}>
-              <div className={styles.tableHeader3}>
-                <div className={styles.text27}>Date</div>
+          <div className="absolute top-[0px] left-[301px] w-[97px] flex flex-col items-start justify-start text-center text-xs text-component-colors-utility-success-utility-success-700">
+            <div className="bg-colors-background-bg-secondary flex flex-row items-center justify-start pt-[13px] pb-[11px] pr-[35px] pl-spacing-3xl text-left text-component-colors-components-buttons-tertiary-button-tertiary-fg border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex flex-row items-center justify-start">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[38px]">
+                  Status
+                </div>
               </div>
             </div>
-            <div className={styles.tableCell24}>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch bg-colors-background-bg-secondary flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch flex flex-row items-center justify-start pt-[25px] px-spacing-3xl pb-[23px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex-1 rounded-radius-full flex flex-row items-center justify-start py-0 px-1.5 border-[1.5px] border-solid border-component-colors-utility-success-utility-success-600">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[33px]">
+                  Track
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="absolute top-[0px] left-[398px] w-[127px] flex flex-col items-start justify-start z-[1] text-xs text-component-colors-components-buttons-tertiary-button-tertiary-fg">
+            <div className="self-stretch bg-colors-background-bg-secondary flex flex-row items-center justify-start pt-[13px] px-6 pb-[11px] border-b-[1px] border-solid border-colors-border-border-secondary">
+              <div className="flex flex-row items-center justify-start">
+                <div className="relative leading-[18px] font-medium inline-block min-w-[27px]">
+                  Date
+                </div>
+              </div>
+            </div>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePickerValue}
                 onChange={(newValue: any) => {
@@ -309,7 +368,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell25}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker1Value}
                 onChange={(newValue: any) => {
@@ -361,7 +420,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell26}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker2Value}
                 onChange={(newValue: any) => {
@@ -412,7 +471,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell27}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker3Value}
                 onChange={(newValue: any) => {
@@ -463,7 +522,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell28}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker4Value}
                 onChange={(newValue: any) => {
@@ -514,7 +573,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell29}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker5Value}
                 onChange={(newValue: any) => {
@@ -565,7 +624,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell30}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker6Value}
                 onChange={(newValue: any) => {
@@ -616,7 +675,7 @@ const Section: NextPage = () => {
                 }}
               />
             </div>
-            <div className={styles.tableCell31}>
+            <div className="self-stretch h-[72px]">
               <DatePicker
                 value={tableCellDateTimePicker7Value}
                 onChange={(newValue: any) => {
@@ -668,35 +727,41 @@ const Section: NextPage = () => {
               />
             </div>
           </div>
-          <div className={styles.pagination}>
-            <div className={styles.details}>Page 1 of 10</div>
-            <div className={styles.actions}>
-              <button className={styles.buttonsbutton}>
+          <div className="absolute top-[618px] left-[0px] box-border w-full flex flex-row items-center justify-center pt-1 px-spacing-3xl pb-2.5 gap-[12px] max-w-full z-[2] text-component-colors-components-buttons-secondary-button-secondary-fg border-t-[1px] border-solid border-colors-border-border-secondary mq450:flex-wrap">
+            <div className="relative leading-[20px] font-medium inline-block min-w-[81px]">
+              Page 1 of 10
+            </div>
+            <div className="flex-1 flex flex-row items-center justify-end py-0 pr-0 pl-[225px] box-border gap-[12px] min-w-[147px] max-w-full mq450:flex-wrap mq450:pl-5 mq450:box-border">
+              <button className="cursor-pointer py-1.5 px-[11px] bg-colors-background-bg-primary flex-1 shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md box-border overflow-hidden flex flex-row items-center justify-center gap-[4px] min-w-[57px] border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
                 <img
-                  className={styles.placeholderIcon}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
-                <div className={styles.textPadding}>
-                  <div className={styles.text28}>Previous</div>
+                <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="relative text-sm leading-[20px] font-semibold font-text-sm-semibold text-component-colors-components-buttons-secondary-button-secondary-fg text-left inline-block min-w-[59px]">
+                    Previous
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon1}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
               </button>
-              <button className={styles.buttonsbutton1}>
+              <button className="cursor-pointer py-1.5 px-[11px] bg-colors-background-bg-primary w-[60px] shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md box-border overflow-hidden shrink-0 flex flex-row items-center justify-center gap-[4px] border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
                 <img
-                  className={styles.placeholderIcon2}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
-                <div className={styles.textPadding1}>
-                  <div className={styles.text29}>Next</div>
+                <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
+                  <div className="relative text-sm leading-[20px] font-semibold font-text-sm-semibold text-component-colors-components-buttons-secondary-button-secondary-fg text-left inline-block min-w-[32px]">
+                    Next
+                  </div>
                 </div>
                 <img
-                  className={styles.placeholderIcon3}
+                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
                   alt=""
                   src="/placeholder2.svg"
                 />
@@ -707,6 +772,6 @@ const Section: NextPage = () => {
       </div>
     </LocalizationProvider>
   );
-};
+});
 
 export default Section;
