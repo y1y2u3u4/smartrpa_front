@@ -1,0 +1,105 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+body {
+  margin: 0;
+  line-height: normal;
+}
+:root {
+  /* fonts */
+  --font-roboto-mono: "Roboto Mono";
+  --text-sm-semibold: Inter;
+
+  /* font sizes */
+  --text-sm-semibold-size: 14px;
+  --text-xs-medium-size: 12px;
+  --text-lg-semibold-size: 18px;
+  --font-size-base: 16px;
+  --display-sm-semibold-size: 30px;
+
+  /* Colors */
+  --colors-background-bg-primary: #fff;
+  --colors-background-bg-secondary: #f9fafb;
+  --colors-border-border-secondary: #eaecf0;
+  --component-colors-components-buttons-tertiary-button-tertiary-fg: #475467;
+  --component-colors-components-buttons-secondary-button-secondary-fg: #344054;
+  --color-royalblue: #175cd3;
+  --color-mediumvioletred: #c11574;
+  --component-colors-utility-success-utility-success-600: #079455;
+  --component-colors-utility-success-utility-success-700: #067647;
+  --colors-text-text-quaternary-500: #667085;
+  --component-colors-components-buttons-primary-button-primary-bg: #7e56d9;
+  --component-colors-components-buttons-secondary-button-secondary-border: #d0d5dd;
+  --component-colors-components-buttons-secondary-color-button-secondary-color-border: #d6bbfb;
+  --component-colors-components-buttons-secondary-color-button-secondary-color-fg: #6941c6;
+  --colors-text-text-primary-900: #101828;
+
+  /* Spacing */
+  --container-padding-desktop: 32px;
+  --radius-xl: 12px;
+  --spacing-3xl: 24px;
+  --spacing-4xl: 32px;
+  --spacing-xxs: 2px;
+  --spacing-lg: 12px;
+  --spacing-xs: 4px;
+  --radius-md: 8px;
+  --spacing-sm: 6px;
+  --spacing-xl: 16px;
+  --spacing-md: 8px;
+  --radius-full: 9999px;
+  --spacing-2xl: 20px;
+  --width-xxs: 320px;
+  --radius-sm: 6px;
+
+  /* Gaps */
+  --gap-4xs: 9px;
+  --gap-11xl: 30px;
+  --gap-4xl: 23px;
+  --gap-xs: 12px;
+  --gap-9xs: 4px;
+  --gap-7xs: 6px;
+  --gap-base: 16px;
+  --gap-sm: 14px;
+  --gap-5xs: 8px;
+  --gap-xl: 20px;
+  --gap-5xl: 24px;
+
+  /* Paddings */
+  --padding-13xl: 32px;
+  --padding-11xs: 2px;
+  --padding-xl: 20px;
+  --padding-2xl: 21px;
+  --padding-5xl: 24px;
+  --padding-mid: 17px;
+  --padding-3xs: 10px;
+  --padding-smi: 13px;
+  --padding-5xs: 8px;
+  --padding-47xl: 66px;
+  --padding-sm: 14px;
+  --padding-2xs: 11px;
+  --padding-9xs: 4px;
+  --padding-xs: 12px;
+  --padding-6xs: 7px;
+  --padding-10xs: 3px;
+  --padding-4xs: 9px;
+  --padding-12xl: 31px;
+  --padding-206xl: 225px;
+  --padding-7xs: 6px;
+  --padding-6xl: 25px;
+  --padding-4xl: 23px;
+  --padding-16xl: 35px;
+  --padding-7xl: 26px;
+  --padding-5xl-5: 24.5px;
+  --padding-sm-5: 13.5px;
+  --padding-12xs: 1px;
+
+  /* Border radiuses */
+  --br-xs: 12px;
+  --br-5xs: 8px;
+  --br-9980xl: 9999px;
+  --br-7xs: 6px;
+
+  /* Effects */
+  --shadows-shadow-xs: 0px 1px 2px rgba(16, 24, 40, 0.05);
+}
