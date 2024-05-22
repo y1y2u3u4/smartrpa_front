@@ -8,11 +8,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('传入数据');
     // const headersList = headers();
     // const userAgent = headersList.get("User-Agent");
-    const model = Cookies.get('model');
-    const API_KEY = Cookies.get('apiKey');
+    const { description, user_input, model, API_KEY } = req.body;
+    console.log('model', model)
     
-    const { description, user_input } = req.body;
-
+    console.log('API_KEY', API_KEY)
     if (!description || !user_input) {
       return res.status(400).json({ code: 1, message: 'Please input both description and user input' });
     }

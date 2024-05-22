@@ -100,6 +100,8 @@ const Workflow: NextPage = memo(() => {
       const requests = shuruData.map((input: { [x: string]: any; }) => {
         const description = step.prompt
         const user_input = step.selectedValue === 'previous' ? input[`${step.id - 1}&churuneirong`] : input[step.selectedValue];
+        const model = Cookies.get('model')
+        const API_KEY = Cookies.get('apiKey');
         console.log(`description`, description);
         console.log(`user_input`, user_input);
         return fetch("/api/music/generate", {
@@ -107,7 +109,7 @@ const Workflow: NextPage = memo(() => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ description, user_input }),
+          body: JSON.stringify({ description, user_input, model, API_KEY }),
         });
       });
       

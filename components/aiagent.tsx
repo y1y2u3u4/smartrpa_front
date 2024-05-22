@@ -31,6 +31,8 @@ const AIButton: React.FC<AIButtonProps> = ({ prompt, shuruneirong, onData }) => 
             toast.error("Please input both description and user input");
             return;
         }
+        const model = Cookies.get('model')
+        const API_KEY = Cookies.get('apiKey');
         console.log("description_0", description);
         console.log("user_input_0", user_input);
         const response = await fetch("/api/music/generate", {
@@ -38,7 +40,7 @@ const AIButton: React.FC<AIButtonProps> = ({ prompt, shuruneirong, onData }) => 
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ description, user_input }),
+            body: JSON.stringify({ description, user_input, model, API_KEY }),
         });
 
         if (!response.ok) {

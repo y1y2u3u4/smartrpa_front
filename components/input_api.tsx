@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 export function Input_api() {
-  const [selectedModel, setSelectedModel] = useState(() => Cookies.get('model') || "model1");
+  const [selectedModel, setSelectedModel] = useState(() => Cookies.get('model') || "gpt-3.5-turbo");
   const [apiKey, setApiKey] = useState(() => Cookies.get('apiKey') || "");
   const [loading, setLoading] = useState(false);
 
@@ -33,8 +33,8 @@ export function Input_api() {
           <SelectValue placeholder="Select model" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="model1">gpt-3.5-turbo</SelectItem>
-          <SelectItem value="model2">gpt-4o</SelectItem>
+          <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
+          <SelectItem value="gpt-4o">gpt-4o</SelectItem>
         </SelectContent>
       </Select>
       <Input placeholder=" Input your OpenAI API Key" value={apiKey} onChange={handleApiKeyChange} type="password" />
