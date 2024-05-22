@@ -1,368 +1,239 @@
 import type { NextPage } from "next";
 import { memo } from "react";
 import CodeSnippet from "./code-snippet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useExcelData } from '@/contexts/AppContext';
+import React, { useState, useEffect } from 'react';
+import AIButton from "@/components/aiagent";
+import Workdashboad from "@/components/workdashboad";
+import { Button } from "@/components/ui/button";
+import { useRequest } from "ahooks";
+import { toast } from "sonner";
+import Cookies from 'js-cookie';
 
 const Workflow: NextPage = memo(() => {
+  const [selectedValue, setSelectedValue] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [steps, setSteps] = useState([
+    {
+      id: 1,
+      title: 'Step 1',
+      selectedValue: '',
+      prompt: '',
+      shuruneirong: '',
+      shuchuneirong: ''
+    }
+  ]);
+  const [activeStep, setActiveStep] = useState(1);
+  const [prompt, setPrompt] = useState('');
+  const [shuruneirong, setShuruneirong] = useState(''); // 初始值为 ''
+  const [shuchuneirong, setShuchuneirong] = useState(''); // 初始值为 ''
+  const { excelData, shuruData, setShuruData_new } = useExcelData();
+  useEffect(() => {
+    if (shuruData && shuruData.length > 0 && (selectedValue && shuruData[0][selectedValue] || selectedValue =='previous')) {
+      // console.log('shuruData', shuruData);
+      // console.log('shuruData_1', shuruData[0][selectedValue]);
+      // console.log('activeStep', activeStep);
+      console.log('steps', steps);
+      setShuruneirong(shuruData[0][selectedValue])
+      setShuchuneirong(shuchuneirong)
+      const newSteps = [...steps];
+      const stepIndex = newSteps.findIndex(s => s.id === activeStep);
+      if (newSteps[stepIndex].selectedValue === 'previous' && stepIndex > 0) {
+        newSteps[stepIndex].shuruneirong = newSteps[stepIndex - 1].shuchuneirong;
+      } else {
+        newSteps[stepIndex].shuruneirong = shuruData[0][newSteps[stepIndex].selectedValue];
+      }
+      setSteps(newSteps);
+    }
+  }, [shuruData, selectedValue, shuchuneirong, activeStep]);
+
+
+  const handleSelectChange = (value: string) => {
+    setSelectedValue(value);
+    console.log('value', value);
+    const newSteps = [...steps];
+    const stepIndex = newSteps.findIndex(s => s.id === activeStep);
+    if (stepIndex !== -1) {
+      newSteps[stepIndex].selectedValue = value;
+      setSteps(newSteps);
+    }
+  };
+
+
+
+
+  const handleCreateStep = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const newStepId = steps.length + 1;
+    setSteps([...steps, {
+      id: newStepId,
+      title: `Step ${newStepId}`,
+      selectedValue: '',
+      prompt: '',
+      shuruneirong: '',
+      shuchuneirong: ''
+    }]);
+    setActiveStep(newStepId);
+  };
+  
+  const handleStepClick = (id:any) => {
+    setActiveStep(id);
+  };
+
+  const { runAsync: generate, data: ids } = useRequest(async () => {
+    if (!excelData) {
+      toast.error("Please input both description and user input");
+      return;
+    }
+    let allData = []; 
+
+    for (const step of steps) {
+      // 创建一个数组，这个数组包含了所有的请求
+      
+      const requests = shuruData.map((input: { [x: string]: any; }) => {
+        const description = step.prompt
+        const user_input = step.selectedValue === 'previous' ? input[`${step.id - 1}&churuneirong`] : input[step.selectedValue];
+        console.log(`description`, description);
+        console.log(`user_input`, user_input);
+        return fetch("/api/music/generate", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ description, user_input }),
+        });
+      });
+      
+      const responses = await Promise.all(requests);
+
+      // 检查所有的响应是否都成功
+      if (responses.some(response => !response.ok)) {
+        toast.error("One or more requests failed");
+        return;
+      }
+
+      const data = await Promise.all(responses.map(response => response.json()));
+
+      const shuruData_new = shuruData.map((item: any, index: string | number) => ({
+        ...item,
+        [`${step.id}&churuneirong`]: data[index as number].data,
+      }));
+      setShuruData_new(shuruData_new);
+      console.log(`shuruData_new`, shuruData_new);
+      allData.push(data);
+      
+    }
+    console.log(`allData`, allData);
+    return allData;
+  }, {
+    manual: true,
+    onSuccess: () => {
+      toast.success("New operation succeeded");
+      setLoading(false);
+    },
+    onError: () => {
+      toast.error("Gen music failed");
+      setLoading(false);
+    }
+  });
+
+  const onSubmit = async function () {
+    const model = Cookies.get('model')
+    const API_KEY = Cookies.get('apiKey');
+    // console.log("model", model);
+    // console.log("API_KEY", API_KEY);
+
+    if (!model || !API_KEY) {
+      alert('Please select a model and input your OpenAI API Key.');
+      return null;
+    }
+    setLoading(true);
+    const data = await generate();
+
+  };
+
+  if (!excelData || excelData.length === 0) {
+    return [];
+  }
+  // 假设 excelData 的第一行包含列名
+  const columnNames = excelData[0];
+
   return (
-    <div className="flex-1 flex flex-col items-center justify-start py-8 px-0 box-border min-w-[480px] max-w-full ml-[-2px] text-left text-sm text-colors-text-text-quaternary-500 font-text-sm-semibold mq675:min-w-full mq450:pb-5 mq450:box-border mq800:pb-[21px] mq800:box-border">
+    <div className="flex flex-col items-center justify-start py-8 px-0 box-border min-w-[480px] max-w-full ml-[-2px] text-left text-sm text-colors-text-text-quaternary-500 font-text-sm-semibold mq675:min-w-full mq450:pb-5 mq450:box-border mq800:pb-[21px] mq800:box-border">
       <div className="self-stretch flex flex-col items-start justify-start py-0 px-container-padding-desktop box-border gap-[9px] max-w-full">
         <div className="self-stretch flex flex-col items-start justify-start gap-[20px] max-w-full text-lg text-colors-text-text-primary-900">
-          <div className="self-stretch flex flex-row items-start justify-start gap-[16px] max-w-full">
-            <div className="flex-1 flex flex-col items-start justify-center gap-[4px] max-w-full">
-              <div className="self-stretch relative leading-[28px] font-semibold">
-                {" "}
-                workflow
-              </div>
-              <div className="self-stretch h-5 relative text-sm leading-[20px] text-component-colors-components-buttons-tertiary-button-tertiary-fg hidden overflow-hidden text-ellipsis whitespace-nowrap">
-                Manage your team members and their account permissions here.
-              </div>
-            </div>
-            <div className="h-10 hidden flex-row items-center justify-start gap-[12px] max-w-full text-sm text-component-colors-components-buttons-tertiary-button-tertiary-fg">
-              <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    Tertiary
+          <div className="self-stretch flex flex-row items-center justify-between gap-[16px] max-w-full">
+            <div className="flex flex-row items-center gap-[12px]">
+              {steps.map((step) => (
+                <div
+                  key={step.id}
+                  className={`cursor-pointer px-4 py-2 rounded-md border ${activeStep === step.id ? 'border-component-colors-components-buttons-primary-button-primary-bg text-primary bg-gray-200' : 'border-gray-300 text-gray-500'}`}
+                  onClick={() => handleStepClick(step.id)}
+                >
+                  <div className="relative leading-[20px] font-semibold inline-block min-w-[39px]">
+                    {step.title}
                   </div>
                 </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder.svg"
-                />
-              </div>
-              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-color-button-secondary-color-border">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder1.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    Secondary
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder1.svg"
-                />
-              </div>
-              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden flex flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder2.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    View in Schema
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder2.svg"
-                />
-              </div>
-              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder3.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    Primary
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder3.svg"
-                />
-              </div>
+              ))}
             </div>
-            <div className="hidden flex-col items-start justify-start">
-              <img
-                className="w-5 h-5 relative overflow-hidden shrink-0"
-                alt=""
-                src="/dotsvertical.svg"
-              />
-            </div>
-          </div>
-          <img
-            className="self-stretch relative max-w-full overflow-hidden max-h-full hidden z-[0]"
-            alt=""
-            src="/divider2.svg"
-          />
-        </div>
-        <div className="self-stretch flex flex-row items-start justify-start py-0 px-0 box-border gap-[16px] max-w-full mq675:flex-wrap">
-          <div className="h-10 w-[355px] box-border flex flex-col items-start justify-start pt-[11px] px-0 pb-0 max-w-full shrink-0 border-b-[1px] border-solid border-colors-border-border-secondary">
-            <div className="w-[108px] flex flex-row items-start justify-start gap-[12px]">
-              <div className="flex flex-row items-center justify-center pt-0 px-spacing-xs pb-[9px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-b-[2px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
-                <div className="relative leading-[20px] font-semibold inline-block min-w-[39px]">
-                  Step1
-                </div>
-              </div>
-              <input
-                className="w-full [border:none] [outline:none] bg-[transparent] h-8 flex-1 flex flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg box-border font-text-sm-semibold font-semibold text-sm text-colors-text-text-quaternary-500 min-w-[29px]"
-                placeholder="Step2"
-                type="text"
-              />
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-[3px] pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Violations
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold whitespace-nowrap">
-                  About the client
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Notes
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Billing
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Email
-                </div>
-              </div>
-              <div className="h-8 hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg box-border gap-[8px]">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Notifications
-                </div>
-                <div className="h-[22px] rounded-radius-full bg-colors-background-bg-secondary box-border flex flex-row items-center justify-start py-spacing-xxs px-[7px] text-center text-xs text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-colors-border-border-secondary">
-                  <div className="self-stretch relative leading-[18px] font-medium">
-                    2
-                  </div>
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-center pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Integrations
-                </div>
-              </div>
-              <div className="self-stretch hidden flex-row items-center justify-start pt-0 px-spacing-xs pb-spacing-lg">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  API
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="w-[214px] flex flex-row items-center justify-start gap-[14px] shrink-0 text-component-colors-components-buttons-tertiary-button-tertiary-fg">
-            <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder.svg"
-              />
-              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Tertiary
-                </div>
-              </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder.svg"
-              />
-            </div>
-            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-color-button-secondary-color-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-color-button-secondary-color-border">
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder1.svg"
-              />
-              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Secondary
-                </div>
-              </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder1.svg"
-              />
-            </div>
-            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder2.svg"
-              />
-              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  View in Schema
-                </div>
-              </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder2.svg"
-              />
-            </div>
-            <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder3.svg"
-              />
-              <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                <div className="self-stretch relative leading-[20px] font-semibold">
-                  Primary
-                </div>
-              </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder3.svg"
-              />
-            </div>
-            <button className="cursor-pointer py-2 px-[13px] bg-colors-background-bg-primary shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md overflow-hidden flex flex-row items-center justify-center gap-[4px] border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
+            <button onClick={handleCreateStep} className="cursor-pointer py-2 px-[13px] bg-white shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-md overflow-hidden flex flex-row items-center justify-center gap-[4px] border-[1px] border-solid border-gray-300">
               <img
                 className="h-5 w-5 relative overflow-hidden shrink-0 min-h-[20px]"
                 alt=""
                 src="/pluscircle.svg"
               />
               <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                <div className="relative text-sm leading-[20px] font-semibold font-text-sm-semibold text-component-colors-components-buttons-secondary-button-secondary-fg text-left inline-block min-w-[81px]">
+                <div className="relative text-sm leading-[20px] font-semibold text-gray-700 text-left inline-block min-w-[81px]">
                   Create Step
                 </div>
               </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder2.svg"
-              />
             </button>
           </div>
-          <div className="hidden flex-col items-start justify-start">
-            <img
-              className="w-5 h-5 relative overflow-hidden shrink-0"
-              alt=""
-              src="/dotsvertical.svg"
-            />
+          <div className="self-stretch flex flex-col items-start justify-start py-0 px-0 box-border gap-[16px] max-w-full">
+            {steps.map((step) =>
+              activeStep === step.id ? (
+                <Workdashboad
+                  key={step.id}
+                  columnNames={columnNames}
+                  handleSelectChange={handleSelectChange}
+                  prompt={step.prompt}
+                  setPrompt={(newPrompt) => {
+                    const newSteps = [...steps];
+                    const stepIndex = newSteps.findIndex(s => s.id === step.id);
+                    newSteps[stepIndex].prompt = newPrompt;
+                    setSteps(newSteps);
+                  }}
+                  shuruneirong={step.shuruneirong}
+                  setShuruneirong={(newShuruneirong) => {
+                    const newSteps = [...steps];
+                    const stepIndex = newSteps.findIndex(s => s.id === step.id);
+                    newSteps[stepIndex].shuruneirong = newShuruneirong;
+                    setSteps(newSteps);
+                  }}
+                  shuchuneirong={step.shuchuneirong}
+                  setShuchuneirong={(newShuchuneirong) => {
+                    const newSteps = [...steps];
+                    const stepIndex = newSteps.findIndex(s => s.id === step.id);
+                    newSteps[stepIndex].shuchuneirong = newShuchuneirong;
+                    setSteps(newSteps);
+                  }}
+                  previousShuchuneirong={steps[step.id - 2]?.shuchuneirong || ''}
+                />
+              ) : null
+            )}
           </div>
-        </div>
-        <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs text-component-colors-components-buttons-secondary-button-secondary-fg">
-          <div className="relative leading-[20px] font-semibold inline-block min-w-[42px]">
-            提示词
-          </div>
-        </div>
-        <CodeSnippet />
-        <div className="self-stretch overflow-hidden flex flex-col items-center justify-center py-0 px-5 gap-[9px] text-component-colors-components-buttons-tertiary-button-tertiary-fg">
-          <img
-            className="w-[177px] h-px relative hidden"
-            alt=""
-            src="/divider3.svg"
-          />
-          <div className="flex flex-row items-center justify-end gap-[23px]">
-            <div className="h-5 overflow-hidden hidden flex-row items-center justify-center gap-[6px]">
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder.svg"
-              />
-              <div className="self-stretch relative leading-[20px] font-semibold whitespace-nowrap">
-                Learn more
-              </div>
-              <img
-                className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                alt=""
-                src="/placeholder.svg"
-              />
-            </div>
-            <div className="flex flex-row items-center justify-end gap-[12px]">
-              <div className="self-stretch rounded-radius-md overflow-hidden hidden flex-row items-center justify-center py-2.5 px-3.5 gap-[4px]">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    Tertiary
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder.svg"
-                />
-              </div>
-              <div className="shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-colors-background-bg-primary overflow-hidden flex flex-row items-center justify-center py-2 px-[66px] gap-[4px] text-component-colors-components-buttons-secondary-button-secondary-fg border-[1px] border-solid border-component-colors-components-buttons-secondary-button-secondary-border">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 min-h-[20px]"
-                  alt=""
-                  src="/magicwand02.svg"
-                />
-                <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="relative leading-[20px] font-semibold inline-block min-w-[14px]">
-                    AI
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder4.svg"
-                />
-              </div>
-              <div className="self-stretch shadow-[0px_1px_2px_rgba(16,_24,_40,_0.05)] rounded-radius-md bg-component-colors-components-buttons-primary-button-primary-bg overflow-hidden hidden flex-row items-center justify-center py-2.5 px-[13px] gap-[4px] text-colors-background-bg-primary border-[1px] border-solid border-component-colors-components-buttons-primary-button-primary-bg">
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder3.svg"
-                />
-                <div className="self-stretch flex flex-row items-center justify-center py-0 px-spacing-xxs">
-                  <div className="self-stretch relative leading-[20px] font-semibold">
-                    Primary
-                  </div>
-                </div>
-                <img
-                  className="h-5 w-5 relative overflow-hidden shrink-0 hidden min-h-[20px]"
-                  alt=""
-                  src="/placeholder3.svg"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-row items-center justify-center py-0 px-spacing-xxs text-component-colors-components-buttons-secondary-button-secondary-fg">
-          <div className="relative leading-[20px] font-semibold inline-block min-w-[56px]">
-            展示效果
-          </div>
-        </div>
-        <div className="w-[507px] overflow-x-auto flex flex-row items-start justify-start py-0 px-0 box-border gap-[30px] max-w-full">
-          <CodeSnippet
-            propAlignSelf="unset"
-            propHeight="405px"
-            propWidth="244px"
-            propHeight1="405px"
-            propPadding="24px 24px 32px"
-            propMaxHeight="667px"
-          />
-          <CodeSnippet
-            propAlignSelf="unset"
-            propHeight="405px"
-            propWidth="273px"
-            propHeight1="405px"
-            propPadding="24px 24px 17px"
-            propMaxHeight="556px"
-          />
         </div>
       </div>
+      <Button className="w-1/3 mt-4 font-bold" type="button" disabled={loading} onClick={onSubmit}>
+        {(loading ? "Generating..." : "Generate")}
+      </Button>
     </div>
   );
 });
