@@ -19,7 +19,7 @@ const MainContent: NextPage = memo(() => {
     console.log('excelData:', excelData);
   }, [excelData]);
   return (
-    <form className="m-0 w-[1128px] bg-colors-background-bg-primary max-w-full overflow-hidden flex flex-col items-start justify-start pt-8 px-0 pb-12 box-border leading-[normal] tracking-[normal]">
+    <div className="m-0 w-[1128px] bg-colors-background-bg-primary max-w-full overflow-hidden flex flex-col items-start justify-start pt-8 px-0 pb-12 box-border leading-[normal] tracking-[normal]">
       <div className="self-stretch flex flex-col items-start justify-start max-w-full">
         <div className="self-stretch flex flex-col items-start justify-start py-0 px-container-padding-desktop box-border max-w-full">
           <div className="self-stretch flex flex-col items-start justify-start gap-[20px] max-w-full">
@@ -50,7 +50,7 @@ const MainContent: NextPage = memo(() => {
         <Workflow />
         
       </section>
-    </form>
+    </div>
   
   );
 });
