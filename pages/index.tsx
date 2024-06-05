@@ -5,19 +5,26 @@ import { memo } from "react";
 import Section from "../components/section";
 
 import Workflow from "../components/workflow";
+import Workflow_1 from "../components/workflow_1";
 import UploadButton from "../components/upload";
 import DownloadButton from "../components/download";
 import {Input_api} from "../components/input_api";
 import { ExcelDataProvider } from '@/contexts/AppContext';
 import { useExcelData } from '@/contexts/AppContext';
 
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 const MainContent: NextPage = memo(() => {
-  const { excelData } = useExcelData();
+  const { excelData, workflowData, workflowurl, workflowData_final } = useExcelData();
 
   useEffect(() => {
     console.log('excelData:', excelData);
-  }, [excelData]);
+    console.log('workflowData:', workflowData);
+    console.log('workflowurl:', workflowurl);
+    console.log('workflowData_final:', workflowData_final);
+
+  }, [excelData, workflowData, workflowurl, workflowData_final]);
   return (
     <div className="m-0 w-[1128px] bg-colors-background-bg-primary max-w-full overflow-hidden flex flex-col items-start justify-start pt-8 px-0 pb-12 box-border leading-[normal] tracking-[normal]">
       <div className="self-stretch flex flex-col items-start justify-start max-w-full">
@@ -45,9 +52,15 @@ const MainContent: NextPage = memo(() => {
       </div>
       
       <section className="self-stretch flex flex-row flex-wrap items-start justify-start py-0 pr-0.5 pl-0 box-border max-w-full">
-        
-        <Section data={excelData} />
-        <Workflow />
+
+        <Section data={excelData} workflowurl={workflowurl} />
+        {
+          excelData && !workflowData_final ? (
+            <Workflow />
+          ) : (
+            <Workflow_1 workflowData={workflowData_final ? workflowData_final : workflowData} />
+          )
+        }
         
       </section>
     </div>

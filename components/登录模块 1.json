@@ -1,0 +1,123 @@
+{
+  "clicks": [
+    {
+      "element": {
+        "tagName": "INPUT",
+        "id": "",
+        "className": "el-input__inner",
+        "name": "",
+        "innerText": "",
+        "placeholder": "请输入手机号"
+      },
+      "value": "",
+      "time": "2024-06-04T09:47:13.389Z"
+    },
+    {
+      "element": {
+        "tagName": "INPUT",
+        "id": "",
+        "className": "el-input__inner",
+        "name": "",
+        "innerText": "",
+        "placeholder": "请输入登录密码"
+      },
+      "value": "",
+      "time": "2024-06-04T09:47:16.979Z"
+    }
+  ],
+  "navigations": [
+    {
+      "url": "https://www.google.com/",
+      "time": "2024-06-04T09:47:04.289Z"
+    },
+    {
+      "url": "https://www.google.com/",
+      "time": "2024-06-04T09:47:08.182Z"
+    },
+    {
+      "url": "https://saaserp-pos.yibainetwork.com/#/home_page",
+      "time": "2024-06-04T09:47:09.978Z"
+    },
+    {
+      "url": "https://saaserp-pos.yibainetwork.com/#/login_page",
+      "time": "2024-06-04T09:47:11.903Z"
+    },
+    {
+      "url": "https://saaserp-pos.yibainetwork.com/#/home_page",
+      "time": "2024-06-04T09:47:18.808Z"
+    }
+  ],
+  "inputs": [
+    {
+      "element": {
+        "tagName": "INPUT",
+        "id": "",
+        "className": "el-input__inner",
+        "name": "",
+        "innerText": "",
+        "placeholder": "请输入手机号",
+        "value": "18910748237",
+        "label": ""
+      },
+      "value": "18910748237",
+      "time": "2024-06-04T09:47:13.529Z"
+    },
+    {
+      "element": {
+        "tagName": "INPUT",
+        "id": "",
+        "className": "el-input__inner",
+        "name": "",
+        "innerText": "",
+        "placeholder": "请输入登录密码",
+        "value": "Akayoj8a92",
+        "label": ""
+      },
+      "value": "Akayoj8a92",
+      "time": "2024-06-04T09:47:17.091Z"
+    }
+  ],
+  "scrolls": [],
+  "keydowns": [
+    {
+      "key": "Meta",
+      "code": "MetaLeft",
+      "time": "2024-06-04T09:47:10.037Z"
+    },
+    {
+      "key": "Meta",
+      "code": "MetaLeft",
+      "time": "2024-06-04T09:47:13.465Z"
+    },
+    {
+      "key": "v",
+      "code": "KeyV",
+      "time": "2024-06-04T09:47:13.515Z"
+    },
+    {
+      "key": "Meta",
+      "code": "MetaLeft",
+      "time": "2024-06-04T09:47:14.267Z"
+    },
+    {
+      "key": "Meta",
+      "code": "MetaLeft",
+      "time": "2024-06-04T09:47:17.013Z"
+    },
+    {
+      "key": "v",
+      "code": "KeyV",
+      "time": "2024-06-04T09:47:17.082Z"
+    },
+    {
+      "key": "Enter",
+      "code": "Enter",
+      "time": "2024-06-04T09:47:17.536Z"
+    },
+    {
+      "key": "Meta",
+      "code": "MetaLeft",
+      "time": "2024-06-04T09:47:21.677Z"
+    }
+  ]
+}
