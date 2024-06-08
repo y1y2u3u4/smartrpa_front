@@ -8,6 +8,8 @@ import { downloadAndUploadvideo, getSignedUrl } from "@/lib/s3";
 export default async function handler(req, res) {
     const sortedData = req.body.sortedData;
     const row = req.body.row;
+    const showHead = req.body.selectedValue_1; 
+    
     let cookies;
     console.log('req.body.cookie:', req.body.cookie);
     if (req.body.cookie) {
@@ -110,13 +112,11 @@ export default async function handler(req, res) {
     //     return filteredData;
     // };
 
-
-
     const sortedData_new= matchAndReplace(sortedData, row);
     console.log('sortedData_new_run:', sortedData_new);
 
 
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({ headless: !showHead });
     let page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
 
@@ -126,22 +126,22 @@ export default async function handler(req, res) {
     // 打印已设置的 cookies 以进行验
     
 
-    const screenshotDir = path.resolve(__dirname, 'screenshots');
-    const gifFilePath = path.resolve(__dirname, 'screencast.gif');
+    // const screenshotDir = path.resolve(__dirname, 'screenshots');
+    // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
 
-    // 创建截图目录
-    if (!fs.existsSync(screenshotDir)) {
-        fs.mkdirSync(screenshotDir);
-    }
+    // // 创建截图目录
+    // if (!fs.existsSync(screenshotDir)) {
+    //     fs.mkdirSync(screenshotDir);
+    // }
 
-    const client = await page.target().createCDPSession();
-    await client.send('Page.startScreencast', { format: 'jpeg', everyNthFrame: 5 });
-    let frameCount = 0;
-    client.on('Page.screencastFrame', ({ data, sessionId }) => {
-        const buffer = Buffer.from(data, 'base64');
-        fs.writeFileSync(path.resolve(screenshotDir, `frame_${frameCount++}.jpeg`), buffer);
-        client.send('Page.screencastFrameAck', { sessionId });
-    });
+    // const client = await page.target().createCDPSession();
+    // await client.send('Page.startScreencast', { format: 'jpeg', everyNthFrame: 5 });
+    // let frameCount = 0;
+    // client.on('Page.screencastFrame', ({ data, sessionId }) => {
+    //     const buffer = Buffer.from(data, 'base64');
+    //     fs.writeFileSync(path.resolve(screenshotDir, `frame_${frameCount++}.jpeg`), buffer);
+    //     client.send('Page.screencastFrameAck', { sessionId });
+    // });
 
     // 创建一个对象来存储监控结果
     const monitorResults = {
@@ -240,13 +240,13 @@ export default async function handler(req, res) {
         const count = values.filter(value => value === event.element[attribute]).length;
         return count === 1;
     }
-
+    let count = 0;
     for (const event of sortedData_new) {
         
         const { type, time } = event;
         console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
-        // try {
+        try {
         switch (type) {
             case 'click':
                 let clickSelector;
@@ -260,7 +260,13 @@ export default async function handler(req, res) {
                         event.element.innerText.includes('翻译') || event.element.innerText.includes('保存所有站点')
                     ) {
                         clickSelector = `//button[contains(., '${event.element.innerText}')]`;
-                    } else {
+                    } else if (event.element.innerText.includes('确定'))
+                     {
+                      clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
+
+
+                     }
+                    else {
                         clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}']`;
                     }
                     isXPath_click = true;
@@ -274,14 +280,28 @@ export default async function handler(req, res) {
 
                 if (!event.element.leixing) {
                     if (isXPath_click) {
+                        if (event.element.innerText.includes('确定')){
+                            console.log('点击“确定”按钮');
+                            await page.evaluate((selector) => {
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                const element = xpathResult.snapshotItem(2);
+                                console.log('element:', element);
+                                element.click();
+                            }, clickSelector);
+                            console.log('点击“确定”按钮_2');
+                        }
+                        else {
+                            await page.evaluate((selector) => {
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                const element = xpathResult.singleNodeValue;
+                                console.log('element:', element);
+                                element.click();
+                            }, clickSelector);
+}
                         // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
-                        await page.evaluate((selector) => {
-                            const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                            console.log('xpathResult:', xpathResult);
-                            const element = xpathResult.singleNodeValue;
-                            console.log('element:', element);
-                            element.click();
-                        }, clickSelector);
+
                     } else {
                         await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
                         await page.click(clickSelector);
@@ -435,12 +455,12 @@ export default async function handler(req, res) {
             case 'input':
                 let inputSelector;
                 let isXPath = false;
-                console.log('event.element.id:', event.element.id);
-                console.log('event.element.className:', event.element.className);
-                console.log('event.element.tagName:', event.element.tagName);
-                console.log('event.element.id_unique:', isUniqueAttribute('id', event,sortedData_new));
-                console.log('event.element.className_unique:', isUniqueAttribute('className', event, sortedData_new));
-                console.log('event.element.tagName_unique:', isUniqueAttribute('tagName', event,sortedData_new));
+                // console.log('event.element.id:', event.element.id);
+                // console.log('event.element.className:', event.element.className);
+                // console.log('event.element.tagName:', event.element.tagName);
+                // console.log('event.element.id_unique:', isUniqueAttribute('id', event,sortedData_new));
+                // console.log('event.element.className_unique:', isUniqueAttribute('className', event, sortedData_new));
+                // console.log('event.element.tagName_unique:', isUniqueAttribute('tagName', event,sortedData_new));
 
                 if (event.element.label && isUniqueAttribute('label', event, sortedData_new)) {
                     if (event.element.label === '要点说明1') {
@@ -486,6 +506,7 @@ export default async function handler(req, res) {
                 // if (!event.element.leixing) {
                     if (isXPath) {
                         await page.evaluate(async (selector, value, lable) => {
+                            value = String(value);
                             let element; 
                             if (lable === '要点说明2') {
                                  const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
@@ -551,6 +572,7 @@ export default async function handler(req, res) {
                         }, inputSelector, inputValue, inputlable);
                     } else {
                         await page.evaluate(async (selector, value) => {
+                            value = String(value);
                             const element = document.querySelector(selector);
                             console.log('element:', element);
 
@@ -605,11 +627,11 @@ export default async function handler(req, res) {
             default:
                 break;
         }
-        // } catch (error) {
-        //     console.error(`An error occurred in the ${type} case:`, error);
-        // }
-
-        let cookies = await page.cookies();
+        count++;
+        } catch (error) {
+            console.error(`An error occurred in the ${type} case:`, error);
+        }
+        // let cookies = await page.cookies();
         // console.log("cookies_rcheck",cookies);
         // 等待一定的时间以模拟真实的用户操作间隔
         const currentTime = new Date(time).getTime();
@@ -618,48 +640,11 @@ export default async function handler(req, res) {
         await new Promise(resolve => setTimeout(resolve, waitTime));
         console.log('check_5');
     }
+    const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
+    res.write(`\n${JSON.stringify({ monitorResults })}\n`);
+    res.write(JSON.stringify({ runresult }));
+    console.log('monitorResults_done');
+    res.end()
+    await browser.close();
 
-
-    // 等待1分钟
-    // await new Promise(resolve => setTimeout(resolve, 60000));
-    setTimeout(async () => {
-        if (!page.isClosed()) {
-            // 停止屏幕广播
-            await client.send('Page.stopScreencast');
-        }
-        browser.disconnect();
-    }, 2000);
-
-    browser.on('disconnected', async () => {
-        try {
-            // 返回结构化的 JSON
-            res.write(`\n${JSON.stringify({ monitorResults })}\n`);
-            console.log('monitorResults_done');
-            // res.flush();
-            // 使用 FFmpeg 将 JPEG 帧合成为 GIF 文件
-            // exec(`ffmpeg -f image2 -framerate 2 -i ${screenshotDir}/frame_%d.jpeg ${gifFilePath}`, async (err) => {
-            //     if (err) {
-            //         console.error('Error creating GIF:', err);
-            //     } else {
-            //         const gifBuffer = fs.readFileSync(gifFilePath);
-
-            //         const s3Key = `check_run.gif`;
-            //         console.log('ffmpeg_done');
-            //         const data = await downloadAndUploadvideo(gifBuffer, s3Key);
-            //         console.log('Upload success', data);
-            //         const gifUrl = await getSignedUrl(data.Bucket, data.Key);
-            //         console.log('GIF URL:', gifUrl);
-            //         res.write(`\n${JSON.stringify({ monitorResults })}\n`);
-            //         res.write(JSON.stringify({ gifUrl }));
-            //         res.end();
-            //     }
-            // });
-            res.end()
-            await browser.close();
-        } catch (error) {
-            console.error('Error in disconnected event handler:', error);
-        }
-    });
-
-    
 }

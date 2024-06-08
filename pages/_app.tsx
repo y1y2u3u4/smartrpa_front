@@ -5,7 +5,7 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import "./global.css";
-
+import { BrowserRouter } from 'react-router-dom';
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;

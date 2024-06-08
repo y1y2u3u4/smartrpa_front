@@ -9,7 +9,7 @@
         "innerText": "",
         "placeholder": "请输入手机号"
       },
-      "value": "",
+      "value": "15810082616",
       "time": "2024-06-04T09:47:13.389Z"
     },
     {
@@ -21,7 +21,7 @@
         "innerText": "",
         "placeholder": "请输入登录密码"
       },
-      "value": "",
+      "value": "ChrHdh6688",
       "time": "2024-06-04T09:47:16.979Z"
     },
     {
@@ -95,7 +95,7 @@
         "placeholder": "请选择",
         "leixing": "自定义2"
       },
-      "value": "Sadong",
+      "value": "Ningkui",
       "time": "2024-06-04T09:57:54.014Z"
     },
 
@@ -107,6 +107,15 @@
         "innerText": "一键检测侵权词/敏感词"
       },
       "time": "2024-06-05T02:20:58.437Z"
+    },
+    {
+      "element": {
+        "tagName": "SPAN",
+        "id": "",
+        "className": "",
+        "innerText": "确定"
+      },
+      "time": "2024-06-05T02:21:00.437Z"
     },
     {
       "element": {
@@ -148,12 +157,8 @@
   ],
   "navigations": [
     {
-      "url": "https://www.google.com/",
+      "url": "https://www.baidu.com/",
       "time": "2024-06-04T09:47:04.289Z"
-    },
-    {
-      "url": "https://www.google.com/",
-      "time": "2024-06-04T09:47:08.182Z"
     },
     {
       "url": "https://saaserp-pos.yibainetwork.com/#/home_page",
@@ -177,10 +182,10 @@
         "name": "",
         "innerText": "",
         "placeholder": "请输入手机号",
-        "value": "18910748237",
+        "value": "15810082616",
         "label": ""
       },
-      "value": "18910748237",
+      "value": "15810082616",
       "time": "2024-06-04T09:47:13.529Z"
     },
     {
@@ -191,10 +196,10 @@
         "name": "",
         "innerText": "",
         "placeholder": "请输入登录密码",
-        "value": "Akayoj8a92",
+        "value": "ChrHdh6688",
         "label": ""
       },
-      "value": "Akayoj8a92",
+      "value": "ChrHdh6688",
       "time": "2024-06-04T09:47:17.091Z"
     },
     {
@@ -314,18 +319,6 @@
       },
       "value": "**Fresh and Artistic Ambiance**: Transform your living space with these sea urchin shell hanging basins, adding a touch of light and nature to your home. Create a unique and inviting atmosphere with these eye-catching household decorations.",
       "time": "2024-06-05T02:20:51.950Z"
-    },
-    {
-      "element": {
-        "tagName": "DIV",
-        "id": "text-elem972547196834586",
-        "className": "w-e-text",
-        "innerText": "**Fresh and Artistic Ambiance**: Transform your living space with these sea urchin shell hanging basins, adding a touch of light and nature to your home. Create a unique and inviting atmosphere with these eye-catching household decorations.",
-        "label": "产品描述",
-        "leixing": "自定义3.6"
-      },
-      "value": "**Fresh and Artistic Ambiance**: Transform your living space with these sea urchin shell hanging basins, adding a touch of light and nature to your home. Create a unique and inviting atmosphere with these eye-catching household decorations.",
-      "time": "2024-06-05T02:20:53.102Z"
     }
   ],
   "scrolls": [],

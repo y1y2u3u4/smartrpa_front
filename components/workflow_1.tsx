@@ -5,6 +5,7 @@ import { TextField, InputAdornment, Icon, IconButton } from "@mui/material";
 import Typography from '@mui/material/Typography';
 import {ActionList} from "@/components/action";
 import RunButton from "@/components/runworkflow";
+import CreatButton from "@/components/creatworkflow";
 import UploadButton from "@/components/upload_workflow";
 import DownloadButton from "@/components/download_workflow";
 import { useExcelData } from '@/contexts/AppContext';
@@ -283,7 +284,8 @@ const Workflow_1: NextPage<WorkflowType> = memo(({ className = "", workflowData 
                 <div className="self-stretch overflow-hidden flex flex-col items-center justify-center py-0 px-5 gap-[9px]">
                     <div className="flex flex-row items-center justify-end gap-[23px]">
                         <div className="flex flex-row items-center justify-end gap-[12px]">
-                            <RunButton sortedData={sortedData_new} />
+                            {/* <RunButton sortedData={sortedData_new} /> */}
+                            <CreatButton sortedData={sortedData_new} />
                         </div>
                     </div>
                 </div>
