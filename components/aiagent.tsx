@@ -43,6 +43,7 @@ const AIButton: React.FC<AIButtonProps> = ({ prompt, shuruneirong, onData }) => 
             body: JSON.stringify({ description, user_input, model, API_KEY }),
         });
 
+        
         if (!response.ok) {
             toast.error("Request failed");
             return;

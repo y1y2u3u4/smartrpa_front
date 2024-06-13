@@ -257,7 +257,7 @@ export default async function handler(req, res) {
                     clickSelector = `.${event.element.className.split(' ').join('.')}`;
                 } else if (event.element.tagName && event.element.innerText) {
                     if (event.element.innerText.includes('保存当前页') || event.element.innerText.includes('同步至未推送站点') || 
-                        event.element.innerText.includes('翻译') || event.element.innerText.includes('保存所有站点')
+                        event.element.innerText.includes('翻译') || event.element.innerText.includes('保存所有站点') || event.element.innerText.includes('保存并提交所有站点')
                     ) {
                         clickSelector = `//button[contains(., '${event.element.innerText}')]`;
                     } else if (event.element.innerText.includes('确定'))
@@ -513,7 +513,6 @@ export default async function handler(req, res) {
                                  console.log('xpathResult:', xpathResult);
                                  element = xpathResult.singleNodeValue.parentNode.parentNode.parentNode.nextElementSibling.children[0].children[0].children[0];
                                  console.log('element:', element);
-                                 
                             }
                             else if (lable === '要点说明3') {
                                  const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
@@ -544,7 +543,7 @@ export default async function handler(req, res) {
                                 console.log('xpathResult:', xpathResult);
                                 const element_0 = xpathResult.singleNodeValue;
                                 const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
-                                element = element_1.children[1].children[0].children[0].children[0].children[1]
+                                element = element_1.children[1].children[0].children[0].children[0].children[1].children[0]
                                 console.log('element:', element);
                             }
                             else {
@@ -557,18 +556,34 @@ export default async function handler(req, res) {
                             // 模拟用户输入
                             const inputEvent = new Event('input', { bubbles: true });
                             const changeEvent = new Event('change', { bubbles: true });
+                            const blurEvent = new Event('blur', { bubbles: true });
 
-                            // 清空输入框并输入新的值
-                            element.value = '';
-                            element.dispatchEvent(inputEvent);
-
-                            for (let i = 0; i < value.length; i++) {
-                                element.value += value[i];
+                            // 检查元素是否是 contenteditable
+                            if (element.contentEditable === 'true') {
+                                // 清空输入框并输入新的值
+                                element.innerText = '';
                                 element.dispatchEvent(inputEvent);
-                                await new Promise(resolve => setTimeout(resolve, 20)); // 模拟用户输入间隔
-                            }
 
-                            element.dispatchEvent(changeEvent);
+                                for (let i = 0; i < value.length; i++) {
+                                    element.innerText += value[i];
+                                    element.dispatchEvent(inputEvent);
+                                    await new Promise(resolve => setTimeout(resolve, 20)); // 模拟用户输入间隔
+                                }
+
+                                element.dispatchEvent(blurEvent);
+                            } else {
+                                // 清空输入框并输入新的值
+                                element.value = '';
+                                element.dispatchEvent(inputEvent);
+
+                                for (let i = 0; i < value.length; i++) {
+                                    element.value += value[i];
+                                    element.dispatchEvent(inputEvent);
+                                    await new Promise(resolve => setTimeout(resolve, 20)); // 模拟用户输入间隔
+                                }
+
+                                element.dispatchEvent(changeEvent);
+                            }
                         }, inputSelector, inputValue, inputlable);
                     } else {
                         await page.evaluate(async (selector, value) => {
