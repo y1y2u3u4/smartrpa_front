@@ -311,3 +311,8 @@ export function DataTable<TData, TValue>({
         </div>
     )
 }
+
+
+export default function MyPage() {
+    return <div>Hello, world!</div>;
+}
