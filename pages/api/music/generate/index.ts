@@ -10,8 +10,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // const userAgent = headersList.get("User-Agent");
     const { description, user_input, model, API_KEY } = req.body;
     console.log('model', model)
-    
     console.log('API_KEY', API_KEY)
+    console.log('description', description)
+    console.log('user_input', user_input)
     if (!description || !user_input) {
       return res.status(400).json({ code: 1, message: 'Please input both description and user input' });
     }

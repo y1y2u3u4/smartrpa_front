@@ -18,8 +18,48 @@ export default async function handler(req, res) {
         
         console.log('cookies success', latestCookies);
     }
-    const browser = await puppeteer.launch({ headless: false });
+
+    // const proxyHost = "www.16yun.cn";
+    // const proxyPort = "5445";
+    // const proxyUser = "16QMSOML";
+    // const proxyPass = "280651";
+
+    // const proxySettings = {
+    //     // proxy: `http://${proxyUser}:${proxyPass}@${proxyHost}:${proxyPort}`,
+    //     headers: {
+    //         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+    //     }
+    // };
+
+    const browser = await puppeteer.launch({
+        headless: false,
+        defaultViewport: {
+            width: 1300,
+            height: 900
+        },
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-blink-features=AutomationControlled'
+        ]
+    });
+
     const page = await browser.newPage();
+    //防止被识别为自动化
+    await page.evaluateOnNewDocument(() => {
+        delete navigator.__proto__.webdriver;
+        window.navigator.chrome = {
+            runtime: {},
+        };
+        const originalQuery = window.navigator.permissions.query;
+        window.navigator.permissions.query = (parameters) => (
+            parameters.name === 'notifications' ?
+                Promise.resolve({ state: Notification.permission }) :
+                originalQuery(parameters)
+        );
+    });
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36');
+    
     await page.setViewport({ width: 1280, height: 720 });
     const screenshotDir = path.resolve(__dirname, 'screenshots');
     const gifFilePath = path.resolve(__dirname, 'screencast.gif');
@@ -212,11 +252,14 @@ export default async function handler(req, res) {
         }
     });
 
-
-    await page.goto('https://www.google.com');
+    await page.goto('https://www.baidu.com');
     res.writeHead(200, {
         'Content-Type': 'application/json',
     });
+    
+    await page.evaluate(async () => {
+        Object.defineProperty(navigator, 'webdriver', { get: () => false })
+    })
 
     // 获取浏览器实例的 WebSocket 端点
     const wsEndpoint = browser.wsEndpoint();
