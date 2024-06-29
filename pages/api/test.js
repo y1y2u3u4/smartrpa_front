@@ -1,10 +1,14 @@
 var puppeteer = require('puppeteer');
 
 const fs = require('fs')
+const path = require('path');
 
 async function saveCookies(cookies) {
-    fs.writeFileSync('cookies.json', JSON.stringify(cookies, null, 2));
+    const path = require('path');
+    const cookiesPath = path.join(process.cwd(), 'cookies.json');
+    fs.writeFileSync(cookiesPath, JSON.stringify(cookies, null, 2));
 }
+
 
 function checkIfLoggedIn() {
     try {
@@ -51,8 +55,10 @@ async function manualLoginAndSaveSession(url) {
     // 设定浏览器UserAgent
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36');
     // 跳转淘宝登录页
-    await page.setDefaultNavigationTimeout(60000); // 设置超时时间为 60 秒
-    await page.goto('https://www.amap.com');
+    await page.setDefaultNavigationTimeout(180000); // 设置超时时间为 60 秒
+    // await page.goto('https://www.amap.com');
+    await page.goto('https://www.dianping.com/');
+    
     // 这一步十分重要，因为大部分大型网站都会对selenium机制进行检测，例如navigator.webdriver，navigator.languages等等。
     // 这一步就是把navigator的一些属性方法等等注入到浏览器中，绕过这些检测机制。
     await page.evaluate(async () => {
@@ -77,7 +83,7 @@ async function manualLoginAndSaveSession(url) {
 const action = (async () => {
     if (!checkIfLoggedIn()) {
         console.log('未登录，需要手动登录。');
-        await manualLoginAndSaveSession('https://www.amap.com').then(cookies => {
+        await manualLoginAndSaveSession('https://www.dianping.com/').then(cookies => {
             console.log('登录成功，会话已保存。');
         });
     } else {
@@ -100,7 +106,9 @@ const action = (async () => {
     // 新建页面
     var page = await browser.newPage();
     // 从文件中读取 cookies
-    const cookiesString = fs.readFileSync('cookies.json');
+    const path = require('path');
+    const cookiesPath = path.join(process.cwd(), 'cookies.json');
+    const cookiesString = fs.readFileSync(cookiesPath, 'utf8');
     const cookies = JSON.parse(cookiesString);
 
     // 在页面中设置 cookies
@@ -120,7 +128,7 @@ const action = (async () => {
     // 设定浏览器UserAgent
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36');
     // 跳转淘宝登录页
-    await page.goto('https://www.amap.com');
+    await page.goto('https://www.dianping.com/');
     // 这一步十分重要，因为大部分大型网站都会对selenium机制进行检测，例如navigator.webdriver，navigator.languages等等。
     // 这一步就是把navigator的一些属性方法等等注入到浏览器中，绕过这些检测机制。
     await page.evaluate(async () => {
@@ -159,3 +167,36 @@ const action = (async () => {
     console.log('采集开始...');
     // gather(page);
 })();
+
+
+
+// const clickSelector='a[data-click-name="shop_title_click"]'
+
+// var element = document.querySelector(clickSelector);
+
+// element.click();
+
+
+// const buttonSelector = 'button[data-v-3e50dd5e][type="button"].ivu-btn-primary';
+// var buttonElements = document.querySelectorAll(buttonSelector);
+// if (buttonElements.length >= 3) {
+//     var thirdButtonElement = buttonElements[3]; // 注意：数组的索引是从 0 开始的，所以第三个元素的索引是 2
+//     console.log(thirdButtonElement);
+//     thirdButtonElement.click();
+// } else {
+//     console.log('没有足够的匹配元素');
+// }
+
+
+
+
+
+const xpath = "//button[text()='查询']";
+const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+const buttonElement = xpathResult.singleNodeValue;
+console.log('buttonElement:', buttonElement);
+if (buttonElement) {
+    buttonElement.click();
+} else {
+    console.log('没有找到匹配的按钮');
+}

@@ -1,0 +1,56 @@
+{
+  "clicks": [
+    {
+      "element": {
+        "tagName": "A",
+        "id": "",
+        "className": "link onecity",
+        "name": "",
+        "innerText": "长沙"
+      },
+      "value": "长沙",
+      "time": "2024-06-16T03:08:55.448Z"
+    }
+  ],
+  "navigations": [
+    {
+      "url": "https://www.baidu.com/",
+      "time": "2024-06-16T03:08:24.019Z"
+    },
+    {
+      "url": "https://www.dianping.com/",
+      "time": "2024-06-16T03:08:43.595Z"
+    },
+    {
+      "url": "https://www.dianping.com/citylist",
+      "time": "2024-06-16T03:08:50.422Z"
+    }
+  ],
+  "inputs": [
+    {
+      "element": {
+        "tagName": "INPUT",
+        "id": "J-search-input",
+        "className": "J-search-input",
+        "name": "",
+        "innerText": "",
+        "placeholder": "搜索商户名、地址、菜名、外卖等",
+        "value": "巴斯跃动少儿成长中心（五江店）",
+        "label": ""
+      },
+      "value": "巴斯跃动少儿成长中心（五江店）",
+      "time": "2024-06-16T03:09:04.388Z"
+    }
+  ],
+  "scrolls": [
+    {
+      "action": "scroll",
+      "direction": "down",
+      "distance": 500,
+      "time": "2024-06-16T03:10:15.638Z",
+      "type": "scroll"
+    }
+  ],
+  "keydowns": [
+  ]
+}

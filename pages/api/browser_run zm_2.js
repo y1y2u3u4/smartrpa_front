@@ -8,8 +8,8 @@ import { downloadAndUploadvideo, getSignedUrl } from "@/lib/s3";
 export default async function handler(req, res) {
     const sortedData = req.body.sortedData;
     const row = req.body.row;
-    const showHead = req.body.selectedValue_1;
-
+    const showHead = req.body.selectedValue_1; 
+    
     let cookies;
     console.log('req.body.cookie:', req.body.cookie);
     if (req.body.cookie) {
@@ -121,7 +121,7 @@ export default async function handler(req, res) {
     // await page.setCookie(...cookies);
 
     // 打印已设置的 cookies 以进行验
-
+    
 
     // const screenshotDir = path.resolve(__dirname, 'screenshots');
     // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
@@ -296,20 +296,11 @@ export default async function handler(req, res) {
 
                             else {
                                 await page.evaluate((selector) => {
-                                    let xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                    let element = xpathResult.singleNodeValue;
-
-                                    // 如果没有找到元素，尝试添加 '/span' 到选择器的末尾，然后再次尝试选中元素
-                                    if (!element) {
-                                        xpathResult = document.evaluate(selector + "/span", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                        element = xpathResult.singleNodeValue;
-                                    }
-
-                                    if (element) {
-                                        element.click();
-                                    } else {
-                                        console.log('没有找到匹配的元素');
-                                    }
+                                    const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    console.log('xpathResult:', xpathResult);
+                                    const element = xpathResult.singleNodeValue;
+                                    console.log('element:', element);
+                                    element.click();
                                 }, clickSelector);
                             }
                             // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
@@ -689,14 +680,14 @@ export default async function handler(req, res) {
 
     for (const event of sortedData_new) {
         // console.log('row',row)
-
+        
         const { type, time } = event;
         // console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
         try {
             if (type === 'loop') {
                 // 处理循环事件
-
+                
                 const loopCount = row.length || 1; // 默认循环次数为1
                 const loopEvents = event.loopEvents || []; // 要循环的事件列表
 

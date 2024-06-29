@@ -110,35 +110,6 @@ export const columns = (columnNames: any[]) => {
 
 
 
-// function downloadFile(selectedData) {
-//     // 获取选中行的数据
-
-//     // 创建一个新的工作簿
-//     const wb = XLSX.utils.book_new();
-
-//     // 将数据转换为工作表
-//     const ws = XLSX.utils.json_to_sheet(selectedData);
-
-//     // 将工作表添加到工作簿
-//     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-//     // 将工作簿写入文件
-//     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-//     // 创建一个 Blob 对象
-//     const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-
-//     // 使用 file-saver 库保存文件
-//     saveAs(blob, 'file.xlsx');
-// }
-
-// // 将字符串转换为 ArrayBuffer
-// function s2ab(s) {
-//     const buf = new ArrayBuffer(s.length);
-//     const view = new Uint8Array(buf);
-//     for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-//     return buf;
-// }
 
 const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     const [result, setResult] = useState({
@@ -153,6 +124,7 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [workflowName, setWorkflowName] = useState('');
     const [runresult, setRunresult] = useState('');
+    const [runoutput, setRunoutput] = useState('');
     const [selectedValue_1, setSelectedValue_1] = useState('');
     const [selectedValue_2, setSelectedValue_2] = useState('');
     const [num, setNum] = useState(1);
@@ -191,9 +163,10 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     const processRow = async (sortedData:any,row: any) => {
         try {
             console.log('Processing row:', row);
-            const runresult = await fetchWsEndpoint(sortedData,row);
+            const { runoutput, runresult } = await fetchWsEndpoint(sortedData,row);
+            console.log('runoutput:', runoutput);
             console.log('runresult:', runresult);
-            return { ...row, status: runresult };
+            return { ...row, output: runoutput, status: runresult };
         } catch (error) {
             console.error('Error processing row:', error);
             return { ...row, status: 'Error' };
@@ -201,17 +174,32 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     };
 
     async function processRows(sortedData: any, dataObjects: string | any[], start: number, step: number) {
-        for (let i = start; i < dataObjects.length; i += step) {
-            const row = dataObjects[i];
-             const processedData = [];
-            try {
-                const processedRow = await processRow(sortedData, row);
-                processedData.push(processedRow);
-            } catch (error) {
-                console.error('Error processing row:', error);
-                processedData.push({ ...row, status: 'Error' });
-            }
+        const processedData = [];
+
+        // for (let i = start; i < dataObjects.length; i += step) {
+        //     const row = dataObjects[i];
+            
+        //     try {
+        //         const processedRow = await processRow(sortedData, row);
+        //         console.log('processedRow:', processedRow);
+        //         processedData.push(processedRow);
+        //     } catch (error) {
+        //         console.error('Error processing row:', error);
+        //         processedData.push({ ...row, status: 'Error' });
+        //     }
+            
+        // }
+
+        try {
+            const processedRow = await processRow(sortedData, dataObjects);
+            console.log('processedRow:', processedRow);
+            processedData.push(processedRow);
+        } catch (error) {
+            console.error('Error processing row:', error);
+            processedData.push({ ...row, status: 'Error' });
         }
+        return processedData;
+        
     }
 
     const processDataObjects = async (num:any,sortedData: any, dataObjects: any) => {
@@ -222,6 +210,8 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
             promises.push(processRows(sortedData, dataObjects, i, num));
         }
         const processedData=await Promise.all(promises);
+        console.log('processedData:', processedData);
+        // const flatProcessedData = processedData.flat();
         return processedData;
     };
 
@@ -229,7 +219,8 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
 
 
     const fetchWsEndpoint = async (sortedData:any,row: any) => {
-        let searchResults = false; // 添加这一行
+        let runoutput;
+        let runresult;
         try {
             const res = await fetch('/api/browser_run', {
                 method: 'POST',
@@ -262,8 +253,14 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
                             console.log('monitorResults_run', parsedData.monitorResults);
                         }
                         else if (parsedData.runresult) {
+                            runresult = parsedData.runresult
                             console.log('runresult', parsedData.runresult);
                             setRunresult(parsedData.runresult)
+                        }
+                        else if (parsedData.runoutput) {
+                            console.log('runoutput', parsedData.runoutput);
+                            runoutput = parsedData.runoutput
+                            setRunoutput(parsedData.runoutput)
                         }
                     } catch (e) {
                         console.error('Error parsing JSON:', e);
@@ -274,7 +271,7 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         } catch (e) {
             console.error('Error fetching wsEndpoint:', e);
         }
-        return runresult;
+        return { runoutput, runresult };
     };
 
     const Renewaldata = async (workflowName: any, excelData_new: any) => {

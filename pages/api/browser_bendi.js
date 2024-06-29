@@ -5,37 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { exec } from 'child_process';
 import { downloadAndUploadvideo, getSignedUrl } from "@/lib/s3";
 
-// 下载 Puppeteer 并返回可执行路径
-async function downloadPuppeteer() {
-    const browserFetcher = puppeteer.createBrowserFetcher({
-        path: PUPPETEER_PATH
-    });
-    const revisionInfo = await browserFetcher.download('901912'); // 使用特定的 revision，例如最新的
-    return revisionInfo.executablePath;
-}
-
-// 定义 Puppeteer 的下载路径
-const PUPPETEER_PATH = path.resolve(process.cwd(), '.local-chromium');
-
-// 检查 Puppeteer 是否已下载
-function getPuppeteerPath() {
-    const executablePath = path.join(PUPPETEER_PATH, 'chrome-linux', 'chrome');
-    if (fs.existsSync(executablePath)) {
-        return executablePath;
-    }
-    return null;
-}
 
 
 export default async function handler(req, res) {
     let latestCookies;
-    let puppeteerPath = getPuppeteerPath();
-    if (!puppeteerPath) {
-        console.log('Puppeteer not found. Downloading...');
-        puppeteerPath = await downloadPuppeteer();
-        console.log('Puppeteer downloaded to:', puppeteerPath);
-    }
-
     async function getCookiesAndWriteToResponse(page) {
         if (!page) {
             console.log('Page is not defined, skipping cookie retrieval');
@@ -58,29 +31,18 @@ export default async function handler(req, res) {
     //     }
     // };
 
-    // const browser = await puppeteer.launch({
-    //     headless: false,
-    //     defaultViewport: {
-    //         width: 1300,
-    //         height: 900
-    //     },
-    //     args: [
-    //         '--no-sandbox',
-    //         '--disable-setuid-sandbox',
-    //         '--disable-blink-features=AutomationControlled'
-    //     ]
-    // });
-
     const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: puppeteerPath,
-        headless: false, // 启用有表头模式
+        headless: false,
         defaultViewport: {
             width: 1300,
             height: 900
-        }
+        },
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-blink-features=AutomationControlled'
+        ]
     });
-
 
     const page = await browser.newPage();
     const path = require('path');
