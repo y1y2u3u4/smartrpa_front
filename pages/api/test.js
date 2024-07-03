@@ -191,12 +191,19 @@ const action = (async () => {
 
 
 
-const xpath = "//button[text()='查询']";
-const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-const buttonElement = xpathResult.singleNodeValue;
-console.log('buttonElement:', buttonElement);
-if (buttonElement) {
-    buttonElement.click();
-} else {
-    console.log('没有找到匹配的按钮');
-}
+// const xpath = "//button[text()='查询']";
+// const xpath = "//a[text()='好评']";
+// const xpath = "//a/span[text()='行政区']";
+// const text='西城区'
+// const xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+// const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+// const linkElement = xpathResult.singleNodeValue;
+// console.log('linkElement:', linkElement);
+// if (linkElement) {
+//     linkElement.click();
+// } else {
+//     console.log('没有找到匹配的链接');
+// }
+
+
+

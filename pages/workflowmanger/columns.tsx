@@ -176,28 +176,28 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     async function processRows(sortedData: any, dataObjects: string | any[], start: number, step: number) {
         const processedData = [];
 
-        // for (let i = start; i < dataObjects.length; i += step) {
-        //     const row = dataObjects[i];
+        for (let i = start; i < dataObjects.length; i += step) {
+            const row = dataObjects[i];
             
-        //     try {
-        //         const processedRow = await processRow(sortedData, row);
-        //         console.log('processedRow:', processedRow);
-        //         processedData.push(processedRow);
-        //     } catch (error) {
-        //         console.error('Error processing row:', error);
-        //         processedData.push({ ...row, status: 'Error' });
-        //     }
+            try {
+                const processedRow = await processRow(sortedData, row);
+                console.log('processedRow:', processedRow);
+                processedData.push(processedRow);
+            } catch (error) {
+                console.error('Error processing row:', error);
+                processedData.push({ ...row, status: 'Error' });
+            }
             
-        // }
-
-        try {
-            const processedRow = await processRow(sortedData, dataObjects);
-            console.log('processedRow:', processedRow);
-            processedData.push(processedRow);
-        } catch (error) {
-            console.error('Error processing row:', error);
-            processedData.push({ ...row, status: 'Error' });
         }
+
+        // try {
+        //     const processedRow = await processRow(sortedData, dataObjects);
+        //     console.log('processedRow:', processedRow);
+        //     processedData.push(processedRow);
+        // } catch (error) {
+        //     console.error('Error processing row:', error);
+        //     processedData.push({ ...row, status: 'Error' });
+        // }
         return processedData;
         
     }

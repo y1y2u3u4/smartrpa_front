@@ -683,7 +683,7 @@ export default async function handler(req, res) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    const sortedData_new = matchAndReplace(sortedData, row[0]);
+    const sortedData_new = matchAndReplace(sortedData, row);
     console.log('sortedData_new_run:', sortedData_new);
 
 

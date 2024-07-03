@@ -6,8 +6,8 @@ const { Workbook } = require('exceljs');
 export default async function handler(req, res) {
     const sortedData = req.body.sortedData;
     const row = req.body.row;
-    const showHead = req.body.selectedValue_1; 
-    
+    const showHead = req.body.selectedValue_1;
+
     // let cookies;
     // console.log('req.body.cookie:', req.body.cookie);
     // if (req.body.cookie) {
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
         return filteredData;
     };
 
-    const sortedData_new= matchAndReplace(sortedData, row);
+    const sortedData_new = matchAndReplace(sortedData, row);
     console.log('sortedData_new_run:', sortedData_new);
 
 
@@ -77,7 +77,8 @@ export default async function handler(req, res) {
     let page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
     const path = require('path');
-    const cookiesPath = path.join(process.cwd(), 'public', 'cookies.json');
+    const cookiesPath = path.join(process.cwd(), 'pages', 'api', 'cookies.json');
+    console.log('cookiesPath:', cookiesPath);
     const cookiesString = fs.readFileSync(cookiesPath, 'utf8');
     const cookies = JSON.parse(cookiesString);
 
@@ -104,7 +105,7 @@ export default async function handler(req, res) {
     // await page.setCookie(...cookies);
 
     // 打印已设置的 cookies 以进行验
-    
+
 
     // const screenshotDir = path.resolve(__dirname, 'screenshots');
     // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
@@ -124,7 +125,7 @@ export default async function handler(req, res) {
     // });
 
     // 创建一个对象来存储监控结果
-    
+
     const monitorResults = {
         clicks: [],
         navigations: [],
@@ -222,10 +223,10 @@ export default async function handler(req, res) {
         return count === 1;
     }
     let count = 0;
-    let jsonData_1;  
-    let jsonData_2;  
+    let jsonData_1;
+    let jsonData_2;
     let data = [];
-    
+
 
     async function handleEvent(event) {
         const { type, time } = event;
@@ -743,14 +744,9 @@ export default async function handler(req, res) {
                 // 处理循环事件
                 const loopCount = event.loopCount || 1; // 默认循环次数为1
                 const loopEvents = event.loopEvents || []; // 要循环的事件列表
-
-
-                const workbook = new Workbook();
-                const worksheet = workbook.addWorksheet('Sheet1');
-
-                // 添加标题行
-                worksheet.addRow(allHeadersArray);
-
+                const date = new Date();
+                const dateString = date.toISOString().replace(/:/g, '-'); // 将时间中的冒号替换为短横线，因为冒号在文件名中是非法的
+                const filename = `output_${dateString}.xlsx`;
                 for (let i = 0; i < loopCount; i++) {
                     for (const loopEvent of loopEvents) {
                         try {
@@ -759,8 +755,38 @@ export default async function handler(req, res) {
                             console.error(`An error occurred in the loop event:`, error);
                         }
                     }
-                    // 增加随机时间间隔
+                    const allHeaders = new Set();
 
+                    // 收集所有可能的列名称的递归函数
+                    function collectHeaders(data, prefix = '') {
+                        Object.keys(data).forEach(key => {
+                            const fullKey = prefix ? `${prefix}_${key}` : key;
+                            if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                collectHeaders(data[key], fullKey);
+                            } else {
+                                allHeaders.add(fullKey);
+                            }
+                        });
+                    }
+
+                    // 遍历每个对象，收集所有可能的列名称
+                    data.forEach(dataArray => {
+                        dataArray.forEach(data => {
+                            collectHeaders(data);
+                        });
+                    });
+
+                    // 将所有列名称转换为数组
+                    const allHeadersArray = Array.from(allHeaders);
+
+                    // 创建一个新的工作簿和工作表
+                    const workbook = new Workbook();
+                    const worksheet = workbook.addWorksheet('Sheet1');
+
+                    // 添加标题行
+                    worksheet.addRow(allHeadersArray);
+
+                    // 遍历每个对象，并构建数据行
                     data.forEach(dataArray => {
                         dataArray.forEach(data => {
                             const rowData = {};
@@ -785,9 +811,6 @@ export default async function handler(req, res) {
                     });
 
                     // 写入 Excel 文件
-                    const date = new Date();
-                    const dateString = date.toISOString().replace(/:/g, '-'); // 将时间中的冒号替换为短横线，因为冒号在文件名中是非法的
-                    const filename = `output_${dateString}.xlsx`;
                     await workbook.xlsx.writeFile(filename)
                         .then(() => {
                             console.log('Excel 文件已成功创建！');
@@ -795,6 +818,7 @@ export default async function handler(req, res) {
                         .catch(error => {
                             console.error('创建 Excel 文件时出错：', error);
                         });
+                    console.log('保存成功');
 
                     const randomInterval = getRandomInterval();
                     console.log(`Waiting for ${randomInterval} milliseconds before next loop iteration`);
@@ -818,70 +842,6 @@ export default async function handler(req, res) {
     const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
     console.log('data:', data);
 
-    // const allHeaders = new Set();
-
-    // // 收集所有可能的列名称的递归函数
-    // function collectHeaders(data, prefix = '') {
-    //     Object.keys(data).forEach(key => {
-    //         const fullKey = prefix ? `${prefix}_${key}` : key;
-    //         if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-    //             collectHeaders(data[key], fullKey);
-    //         } else {
-    //             allHeaders.add(fullKey);
-    //         }
-    //     });
-    // }
-
-    // // 遍历每个对象，收集所有可能的列名称
-    // data.forEach(dataArray => {
-    //     dataArray.forEach(data => {
-    //         collectHeaders(data);
-    //     });
-    // });
-
-    // // 将所有列名称转换为数组
-    // const allHeadersArray = Array.from(allHeaders);
-
-    // // 创建一个新的工作簿和工作表
-    // const workbook = new Workbook();
-    // const worksheet = workbook.addWorksheet('Sheet1');
-
-    // // 添加标题行
-    // worksheet.addRow(allHeadersArray);
-
-    // // 遍历每个对象，并构建数据行
-    // data.forEach(dataArray => {
-    //     dataArray.forEach(data => {
-    //         const rowData = {};
-
-    //         function populateRowData(data, prefix = '') {
-    //             Object.keys(data).forEach(key => {
-    //                 const fullKey = prefix ? `${prefix}_${key}` : key;
-    //                 if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-    //                     populateRowData(data[key], fullKey);
-    //                 } else {
-    //                     rowData[fullKey] = data[key];
-    //                 }
-    //             });
-    //         }
-
-    //         populateRowData(data);
-
-    //         // 添加数据行
-    //         const row = allHeadersArray.map(header => rowData[header] || '');
-    //         worksheet.addRow(row);
-    //     });
-    // });
-
-    // // 写入 Excel 文件
-    // workbook.xlsx.writeFile('output.xlsx')
-    //     .then(() => {
-    //         console.log('Excel 文件已成功创建！');
-    //     })
-    //     .catch(error => {
-    //         console.error('创建 Excel 文件时出错：', error);
-    //     });
-    // console.log('保存成功');
 
 
     res.write(`\n${JSON.stringify({ monitorResults })}\n`);
