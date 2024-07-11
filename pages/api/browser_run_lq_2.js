@@ -9,8 +9,8 @@ import { downloadAndUploadvideo, getSignedUrl } from "@/lib/s3";
 export default async function handler(req, res) {
     const sortedData = req.body.sortedData;
     const row = req.body.row;
-    const showHead = req.body.selectedValue_1; 
-    
+    const showHead = req.body.selectedValue_1;
+
     // let cookies;
     // console.log('req.body.cookie:', req.body.cookie);
     // if (req.body.cookie) {
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
         return filteredData;
     };
 
-    const sortedData_new= matchAndReplace(sortedData, row);
+    const sortedData_new = matchAndReplace(sortedData, row);
     console.log('sortedData_new_run:', sortedData_new);
 
 
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
     let page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
     const path = require('path');
-    const cookiesPath = path.join(process.cwd(), 'public', 'cookies.json');
+    const cookiesPath = path.join(process.cwd(), 'pages', 'api', 'cookies.json');
     const cookiesString = fs.readFileSync(cookiesPath, 'utf8');
     const cookies = JSON.parse(cookiesString);
 
@@ -107,7 +107,7 @@ export default async function handler(req, res) {
     // await page.setCookie(...cookies);
 
     // 打印已设置的 cookies 以进行验
-    
+
 
     // const screenshotDir = path.resolve(__dirname, 'screenshots');
     // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
@@ -127,7 +127,7 @@ export default async function handler(req, res) {
     // });
 
     // 创建一个对象来存储监控结果
-    
+
     const monitorResults = {
         clicks: [],
         navigations: [],
@@ -225,312 +225,312 @@ export default async function handler(req, res) {
         return count === 1;
     }
     let count = 0;
-    let jsonData_1;  
-    let jsonData_2;  
+    let jsonData_1;
+    let jsonData_2;
     for (const event of sortedData_new) {
-        
+
         const { type, time } = event;
         console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
         try {
-        switch (type) {
-            case 'click':
-                let clickSelector;
-                let isXPath_click = false;
-                if (event.element.id) {
-                    clickSelector = `#${event.element.id}`;
-                } 
-                else if (event.element.tagName && event.element.innerText) {
-                    if (event.element.innerText.includes('保存当前页') || event.element.innerText.includes('同步至未推送站点') ||
-                        event.element.innerText.includes('翻译') || event.element.innerText.includes('保存所有站点') || event.element.innerText.includes('保存并提交所有站点')
-                    ) {
-                        clickSelector = `//button[contains(., '${event.element.innerText}')]`;
-                    } else if (event.element.innerText.includes('确定')) {
-                        clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
+            switch (type) {
+                case 'click':
+                    let clickSelector;
+                    let isXPath_click = false;
+                    if (event.element.id) {
+                        clickSelector = `#${event.element.id}`;
                     }
-                    else {
-                        clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}']`;
-                    }
-                    isXPath_click = true;
-                }
-                else if (event.element.className) {
-                    if (event.element.className === "a[data-click-name='shop_title_click']")  {
-                        clickSelector = `${event.element.className.split(' ').join('.')}`;;
-                    } else if (event.element.className.includes('确定')) {
-                        clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
-                    }
-                    else {
-                        clickSelector = `.${event.element.className.split(' ').join('.')}`;
-                    }
-                } 
-                console.log('clickSelector:', clickSelector);
-                console.log('isXPath_click:', isXPath_click);
-                console.log('leixing:', event.element.leixing);
-                const cliclValue = event.value;
-
-                
-
-                if (!event.element.leixing) {
-                    if (isXPath_click) {
-                        if (event.element.innerText.includes('确定')){
-                            console.log('点击“确定”按钮');
-                            await page.evaluate((selector) => {
-                                const xpathResult = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-                                console.log('xpathResult:', xpathResult);
-                                const element = xpathResult.snapshotItem(2);
-                                console.log('element:', element);
-                                element.click();
-                            }, clickSelector);
-                            console.log('点击“确定”按钮_2');
+                    else if (event.element.tagName && event.element.innerText) {
+                        if (event.element.innerText.includes('保存当前页') || event.element.innerText.includes('同步至未推送站点') ||
+                            event.element.innerText.includes('翻译') || event.element.innerText.includes('保存所有站点') || event.element.innerText.includes('保存并提交所有站点')
+                        ) {
+                            clickSelector = `//button[contains(., '${event.element.innerText}')]`;
+                        } else if (event.element.innerText.includes('确定')) {
+                            clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
                         }
                         else {
-                            await page.evaluate((selector) => {
-                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                console.log('xpathResult:', xpathResult);
-                                const element = xpathResult.singleNodeValue;
-                                console.log('element:', element);
-                                element.click();
-                            }, clickSelector);
-}
-                        // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
-
-                    } else {
-                        // const url = await page.url();
-                        // console.log('Current URL:', url);
-                        // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
-                        await page.click(clickSelector);
-                    }
-                } else if (event.element.leixing === '自定义1') {
-                    console.log('点击“刊登管理”菜单项以展开子菜单');
-                    
-                    await page.evaluate(async () => {
-                        const menuTitle = document.querySelector('.ivu-menu-submenu-title');
-                        console.log('menuTitle', menuTitle);
-                        if (menuTitle) {
-                            console.log('Found the menu title, clicking to expand...');
-                            menuTitle.click();
-                            console.log('menuTitle_1');
-                            // 等待子菜单加载完毕并点击“产品列表”菜单项
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                            const productListItem = document.evaluate("//li[contains(@class, 'ivu-menu-item') and .//span[text()='产品列表']]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                            // console.log('productListItem', productListItem);
-                            if (productListItem) {
-                                console.log('Found the product list item, clicking...');
-                                productListItem.click();
-                                console.log('productListItem_1');
-                            } else {
-                                console.error("无法找到“产品列表”菜单项");
-                            }
+                            clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}']`;
                         }
-                    });
-                } else if (event.element.leixing === '自定义2') {
-                    try {
-                    await page.evaluate(async (cliclValue) => {
-                        // 查找所有具有特定样式的标签元素
-                        const labels = document.querySelectorAll('.ivu-form-item-label[style="width: 60px;"]');
+                        isXPath_click = true;
+                    }
+                    else if (event.element.className) {
+                        if (event.element.className === "a[data-click-name='shop_title_click']") {
+                            clickSelector = `${event.element.className.split(' ').join('.')}`;;
+                        } else if (event.element.className.includes('确定')) {
+                            clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
+                        }
+                        else {
+                            clickSelector = `.${event.element.className.split(' ').join('.')}`;
+                        }
+                    }
+                    console.log('clickSelector:', clickSelector);
+                    console.log('isXPath_click:', isXPath_click);
+                    console.log('leixing:', event.element.leixing);
+                    const cliclValue = event.value;
 
-                        // 迭代这些标签以找到包含 "店铺" 文本的标签
-                        let storeFormItem = null;
-                        labels.forEach(label => {
-                            if (label.textContent.trim() === "店铺") {
-                                storeFormItem = label.parentElement;
+
+
+                    if (!event.element.leixing) {
+                        if (isXPath_click) {
+                            if (event.element.innerText.includes('确定')) {
+                                console.log('点击“确定”按钮');
+                                await page.evaluate((selector) => {
+                                    const xpathResult = document.evaluate(selector, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                                    console.log('xpathResult:', xpathResult);
+                                    const element = xpathResult.snapshotItem(2);
+                                    console.log('element:', element);
+                                    element.click();
+                                }, clickSelector);
+                                console.log('点击“确定”按钮_2');
+                            }
+                            else {
+                                await page.evaluate((selector) => {
+                                    const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    console.log('xpathResult:', xpathResult);
+                                    const element = xpathResult.singleNodeValue;
+                                    console.log('element:', element);
+                                    element.click();
+                                }, clickSelector);
+                            }
+                            // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
+
+                        } else {
+                            // const url = await page.url();
+                            // console.log('Current URL:', url);
+                            // await page.waitForSelector(clickSelector, { visible: true, timeout: 5000 });
+                            await page.click(clickSelector);
+                        }
+                    } else if (event.element.leixing === '自定义1') {
+                        console.log('点击“刊登管理”菜单项以展开子菜单');
+
+                        await page.evaluate(async () => {
+                            const menuTitle = document.querySelector('.ivu-menu-submenu-title');
+                            console.log('menuTitle', menuTitle);
+                            if (menuTitle) {
+                                console.log('Found the menu title, clicking to expand...');
+                                menuTitle.click();
+                                console.log('menuTitle_1');
+                                // 等待子菜单加载完毕并点击“产品列表”菜单项
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                const productListItem = document.evaluate("//li[contains(@class, 'ivu-menu-item') and .//span[text()='产品列表']]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                                // console.log('productListItem', productListItem);
+                                if (productListItem) {
+                                    console.log('Found the product list item, clicking...');
+                                    productListItem.click();
+                                    console.log('productListItem_1');
+                                } else {
+                                    console.error("无法找到“产品列表”菜单项");
+                                }
                             }
                         });
+                    } else if (event.element.leixing === '自定义2') {
+                        try {
+                            await page.evaluate(async (cliclValue) => {
+                                // 查找所有具有特定样式的标签元素
+                                const labels = document.querySelectorAll('.ivu-form-item-label[style="width: 60px;"]');
 
-                        if (storeFormItem) {
-                            const selectButton = storeFormItem.querySelector('.ivu-select-selection');
-                            if (selectButton) {
-                                console.log('Found the select button:', selectButton);
-
-                                // 确保元素在视图中
-                                selectButton.scrollIntoView();
-
-                                // 手动创建并触发点击事件
-                                const clickEvent = new MouseEvent('click', {
-                                    view: window,
-                                    bubbles: true,
-                                    cancelable: true
+                                // 迭代这些标签以找到包含 "店铺" 文本的标签
+                                let storeFormItem = null;
+                                labels.forEach(label => {
+                                    if (label.textContent.trim() === "店铺") {
+                                        storeFormItem = label.parentElement;
+                                    }
                                 });
 
-                                selectButton.dispatchEvent(clickEvent);
-                                console.log('Click event dispatched on select button');
+                                if (storeFormItem) {
+                                    const selectButton = storeFormItem.querySelector('.ivu-select-selection');
+                                    if (selectButton) {
+                                        console.log('Found the select button:', selectButton);
 
-                                // 设置适当的延时，确保下拉菜单有时间加载
-                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                        // 确保元素在视图中
+                                        selectButton.scrollIntoView();
 
-                                // 使用XPath选择包含“Sadong”文本的下拉项
-                                console.log("cliclValue", cliclValue) 
-                                const item = document.evaluate(`//li[contains(@class, 'ivu-select-item') and text()="${cliclValue}"]`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                                
-                                if (item) {
-                                    console.log('Found the Sadong item:', item);
-                                    item.scrollIntoView();
+                                        // 手动创建并触发点击事件
+                                        const clickEvent = new MouseEvent('click', {
+                                            view: window,
+                                            bubbles: true,
+                                            cancelable: true
+                                        });
 
-                                    // 手动创建并触发点击事件
-                                    const itemClickEvent = new MouseEvent('click', {
-                                        view: window,
-                                        bubbles: true,
-                                        cancelable: true
-                                    });
+                                        selectButton.dispatchEvent(clickEvent);
+                                        console.log('Click event dispatched on select button');
 
-                                    item.dispatchEvent(itemClickEvent);
-                                    console.log('Click event dispatched on Sadong item');
+                                        // 设置适当的延时，确保下拉菜单有时间加载
+                                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                                        // 使用XPath选择包含“Sadong”文本的下拉项
+                                        console.log("cliclValue", cliclValue)
+                                        const item = document.evaluate(`//li[contains(@class, 'ivu-select-item') and text()="${cliclValue}"]`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+                                        if (item) {
+                                            console.log('Found the Sadong item:', item);
+                                            item.scrollIntoView();
+
+                                            // 手动创建并触发点击事件
+                                            const itemClickEvent = new MouseEvent('click', {
+                                                view: window,
+                                                bubbles: true,
+                                                cancelable: true
+                                            });
+
+                                            item.dispatchEvent(itemClickEvent);
+                                            console.log('Click event dispatched on Sadong item');
+                                        } else {
+                                            console.error("无法找到包含“Sadong”的下拉项");
+                                        }
+                                    } else {
+                                        console.error("无法找到选择器 .ivu-select-selection 对应的元素");
+                                    }
                                 } else {
-                                    console.error("无法找到包含“Sadong”的下拉项");
+                                    console.error("无法找到包含 '店铺' 标签的 .ivu-form-item 元素");
                                 }
-                            } else {
-                                console.error("无法找到选择器 .ivu-select-selection 对应的元素");
-                            }
-                        } else {
-                            console.error("无法找到包含 '店铺' 标签的 .ivu-form-item 元素");
+                            }, cliclValue);
+                            await new Promise(resolve => setTimeout(resolve, 10000));
+                            console.log('自定义2_done');
+                        } catch (error) {
+                            console.error('An error occurred:', error);
                         }
-                    }, cliclValue);
-                    await new Promise(resolve => setTimeout(resolve, 10000));
-                    console.log('自定义2_done');
-                    } catch (error) {
-                        console.error('An error occurred:', error);
-                    }
-                } else if (event.element.leixing === '自定义3') {
-                    try {
-                        await page.evaluate(async (clickSelector) => {
-                            const selectButton = document.querySelector(clickSelector);
+                    } else if (event.element.leixing === '自定义3') {
+                        try {
+                            await page.evaluate(async (clickSelector) => {
+                                const selectButton = document.querySelector(clickSelector);
 
-                            if (selectButton) {
-                                console.log('Found the select button, clicking to expand...');
-                                selectButton.click();
-                            } else {
-                                console.error("无法找到选择器 .ivu-select-selection 对应的元素");
-                            }
-                        }, clickSelector);
-                        const input = await page.$(clickSelector);
-                        await input.uploadFile(cliclValue);
-                        // 如果需要手动触发上传操作（可选）
-                        // 假设有一个上传按钮需要点击来完成上传
-                        const uploadButtonSelector = '.btn';  // 替换为实际的上传按钮选择器
-                        await page.waitForSelector(uploadButtonSelector, { visible: true });
-                        await page.click(uploadButtonSelector);
+                                if (selectButton) {
+                                    console.log('Found the select button, clicking to expand...');
+                                    selectButton.click();
+                                } else {
+                                    console.error("无法找到选择器 .ivu-select-selection 对应的元素");
+                                }
+                            }, clickSelector);
+                            const input = await page.$(clickSelector);
+                            await input.uploadFile(cliclValue);
+                            // 如果需要手动触发上传操作（可选）
+                            // 假设有一个上传按钮需要点击来完成上传
+                            const uploadButtonSelector = '.btn';  // 替换为实际的上传按钮选择器
+                            await page.waitForSelector(uploadButtonSelector, { visible: true });
+                            await page.click(uploadButtonSelector);
 
-                        console.log('自定义3_done');
-                    } catch (error) {
-                        console.error('An error occurred:', error);
-                    }
-                }
-                
-
-                console.log('check_1');
-                const newPagePromise = new Promise((resolve, reject) => {
-                    const timeoutId = setTimeout(() => {
-                        reject(new Error('Timeout waiting for new page'));
-                    }, 2000); // 设置超时时间为 5 秒
-
-                    browser.once('targetcreated', async target => {
-                        clearTimeout(timeoutId); // 如果 'targetcreated' 事件被触发，那么清除超时
-                        if (target.type() === 'page') {
-                            resolve(await target.page());
+                            console.log('自定义3_done');
+                        } catch (error) {
+                            console.error('An error occurred:', error);
                         }
+                    }
+
+
+                    console.log('check_1');
+                    const newPagePromise = new Promise((resolve, reject) => {
+                        const timeoutId = setTimeout(() => {
+                            reject(new Error('Timeout waiting for new page'));
+                        }, 2000); // 设置超时时间为 5 秒
+
+                        browser.once('targetcreated', async target => {
+                            clearTimeout(timeoutId); // 如果 'targetcreated' 事件被触发，那么清除超时
+                            if (target.type() === 'page') {
+                                resolve(await target.page());
+                            }
+                        });
                     });
-                });
-                console.log('check_2');
-                const newPage = await newPagePromise.catch(() => null);
-                console.log('check_3');
-                console.log('newPage:', newPage);
-                if (newPage !== null) {
-                    console.log('newPage:');
-                    await newPage.setViewport({ width: 1280, height: 720 });
-                    page = newPage;
-                    await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }).catch(() => {
-                        console.log('Navigation timeout after 10 seconds');
-                    });
-                }
+                    console.log('check_2');
+                    const newPage = await newPagePromise.catch(() => null);
+                    console.log('check_3');
+                    console.log('newPage:', newPage);
+                    if (newPage !== null) {
+                        console.log('newPage:');
+                        await newPage.setViewport({ width: 1280, height: 720 });
+                        page = newPage;
+                        await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 }).catch(() => {
+                            console.log('Navigation timeout after 10 seconds');
+                        });
+                    }
 
-                console.log('check_4');
-                break;
+                    console.log('check_4');
+                    break;
 
-            case 'input':
-                let inputSelector;
-                let isXPath = false;
-                // console.log('event.element.id:', event.element.id);
-                // console.log('event.element.className:', event.element.className);
-                // console.log('event.element.tagName:', event.element.tagName);
-                // console.log('event.element.id_unique:', isUniqueAttribute('id', event,sortedData_new));
-                // console.log('event.element.className_unique:', isUniqueAttribute('className', event, sortedData_new));
-                // console.log('event.element.tagName_unique:', isUniqueAttribute('tagName', event,sortedData_new));
+                case 'input':
+                    let inputSelector;
+                    let isXPath = false;
+                    // console.log('event.element.id:', event.element.id);
+                    // console.log('event.element.className:', event.element.className);
+                    // console.log('event.element.tagName:', event.element.tagName);
+                    // console.log('event.element.id_unique:', isUniqueAttribute('id', event,sortedData_new));
+                    // console.log('event.element.className_unique:', isUniqueAttribute('className', event, sortedData_new));
+                    // console.log('event.element.tagName_unique:', isUniqueAttribute('tagName', event,sortedData_new));
 
-                if (event.element.label && isUniqueAttribute('label', event, sortedData_new)) {
-                    if (event.element.label === '要点说明1') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
-                    } else if (event.element.label === '要点说明2') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                    if (event.element.label && isUniqueAttribute('label', event, sortedData_new)) {
+                        if (event.element.label === '要点说明1') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        } else if (event.element.label === '要点说明2') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        }
+                        else if (event.element.label === '要点说明3') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        }
+                        else if (event.element.label === '要点说明4') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        }
+                        else if (event.element.label === '要点说明5') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        }
+                        else if (event.element.label === '产品描述') {
+                            inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                        }
+                        else {
+                            inputSelector = `//label[normalize-space(text())='${event.element.label}']/following-sibling::input | //label[normalize-space(text())='${event.element.label}']/following-sibling::div//textarea`;
+                        }
+                        isXPath = true;
                     }
-                    else if (event.element.label === '要点说明3') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
+                    else if (event.element.id && isUniqueAttribute('id', event, sortedData_new)) {
+                        inputSelector = `#${event.element.id}`;
+                    } else if (event.element.className && isUniqueAttribute('className', event, sortedData_new)) {
+                        inputSelector = `.${event.element.className.split(' ').join('.')}`;
+                    } else if (event.element.tagName && isUniqueAttribute('tagName', event, sortedData_new)) {
+                        inputSelector = event.element.tagName.toLowerCase();
+                    } else if (event.element.innerText && isUniqueAttribute('innerText', event, sortedData_new)) {
+                        inputSelector = `//*[text()='${event.element.innerText}']`;
+                        isXPath = true;
+                    } else if (event.element.placeholder && isUniqueAttribute('placeholder', event, sortedData_new)) {
+                        inputSelector = `//*[@placeholder='${event.element.placeholder}']`;
+                        isXPath = true;
                     }
-                    else if (event.element.label === '要点说明4') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
-                    }
-                    else if (event.element.label === '要点说明5') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
-                    }
-                    else if (event.element.label === '产品描述') {
-                        inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
-                    }
-                    else {
-                        inputSelector = `//label[normalize-space(text())='${event.element.label}']/following-sibling::input | //label[normalize-space(text())='${event.element.label}']/following-sibling::div//textarea`;
-                    }
-                    isXPath = true;
-                }
-                else if (event.element.id && isUniqueAttribute('id', event,sortedData_new)) {
-                    inputSelector = `#${event.element.id}`;
-                } else if (event.element.className && isUniqueAttribute('className', event,sortedData_new)) {
-                    inputSelector = `.${event.element.className.split(' ').join('.')}`;
-                } else if (event.element.tagName && isUniqueAttribute('tagName', event,sortedData_new)) {
-                    inputSelector = event.element.tagName.toLowerCase();
-                } else if (event.element.innerText && isUniqueAttribute('innerText', event,sortedData_new)) {
-                    inputSelector = `//*[text()='${event.element.innerText}']`;
-                    isXPath = true;
-                } else if (event.element.placeholder && isUniqueAttribute('placeholder', event,sortedData_new)) {
-                    inputSelector = `//*[@placeholder='${event.element.placeholder}']`;
-                    isXPath = true;
-                }  
-                const inputValue = event.value;
-                const inputlable = event.element.label;
+                    const inputValue = event.value;
+                    const inputlable = event.element.label;
 
-                console.log('inputSelector:', inputSelector);
-                console.log('isXPath:', isXPath);
-                // if (!event.element.leixing) {
+                    console.log('inputSelector:', inputSelector);
+                    console.log('isXPath:', isXPath);
+                    // if (!event.element.leixing) {
                     if (isXPath) {
                         await page.evaluate(async (selector, value, lable) => {
                             value = String(value);
-                            let element; 
+                            let element;
                             if (lable === '要点说明2') {
-                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                 console.log('xpathResult:', xpathResult);
-                                 element = xpathResult.singleNodeValue.parentNode.parentNode.parentNode.nextElementSibling.children[0].children[0].children[0];
-                                 console.log('element:', element);
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                element = xpathResult.singleNodeValue.parentNode.parentNode.parentNode.nextElementSibling.children[0].children[0].children[0];
+                                console.log('element:', element);
                             }
                             else if (lable === '要点说明3') {
-                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                 console.log('xpathResult:', xpathResult);
-                                 const element_0 = xpathResult.singleNodeValue;
-                                 const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling;
-                                  element = element_1.children[0].children[0].children[0]
-                                 console.log('element:', element);
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                const element_0 = xpathResult.singleNodeValue;
+                                const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling;
+                                element = element_1.children[0].children[0].children[0]
+                                console.log('element:', element);
                             }
                             else if (lable === '要点说明4') {
-                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                 console.log('xpathResult:', xpathResult);
-                                 const element_0 = xpathResult.singleNodeValue;
-                                 const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling.nextElementSibling;
-                                  element = element_1.children[0].children[0].children[0]
-                                 console.log('element:', element);
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                const element_0 = xpathResult.singleNodeValue;
+                                const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling.nextElementSibling;
+                                element = element_1.children[0].children[0].children[0]
+                                console.log('element:', element);
                             }
                             else if (lable === '要点说明5') {
-                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                 console.log('xpathResult:', xpathResult);
-                                 const element_0 = xpathResult.singleNodeValue;
-                                 const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
-                                  element = element_1.children[0].children[0].children[0]
-                                 console.log('element:', element);
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
+                                const element_0 = xpathResult.singleNodeValue;
+                                const element_1 = element_0.parentNode.parentNode.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
+                                element = element_1.children[0].children[0].children[0]
+                                console.log('element:', element);
                             }
                             else if (lable === '产品描述') {
                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
@@ -541,10 +541,10 @@ export default async function handler(req, res) {
                                 console.log('element:', element);
                             }
                             else {
-                                 const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                 console.log('xpathResult:', xpathResult);
+                                const xpathResult = document.evaluate(selector, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                console.log('xpathResult:', xpathResult);
                                 element = xpathResult.singleNodeValue;
-                                 console.log('element:', element);
+                                console.log('element:', element);
                             }
 
                             // 模拟用户输入
@@ -601,108 +601,114 @@ export default async function handler(req, res) {
 
                             element.dispatchEvent(changeEvent);
                         }, inputSelector, inputValue, inputlable);
-                }
-                // } 
-                break;
+                    }
+                    // } 
+                    break;
 
-            case 'output':
-                if (event.element.leixing==='自定义1') {
-                    const data = await page.evaluate(() => {
-                        const reviewCount = document.querySelector('.rank .item').innerText.trim();
-                        const address = document.querySelector('.address .item').nextSibling.textContent.trim();
-                        const phone = document.querySelector('.phone .item.J-phone-hide').innerText.trim();
-
-                        const items = [];
-                        const itemElements = document.querySelectorAll('.promotion .group .item');
-
-                        itemElements.forEach(item => {
-                            const title = item.querySelector('.title').innerText.trim();
-                            const price = item.querySelector('.price').innerText.trim();
-                            const delPrice = item.querySelector('.del-price').innerText.trim();
-                            const soldCount = item.querySelector('.sold-count').innerText.trim();
-
-                            items.push({
-                                title,
-                                price,
-                                delPrice,
-                                soldCount
-                            });
-                        });
-                        return {
-                            review_count: reviewCount,
-                            address: address,
-                            phone: phone,
-                            items: items
-                        };
-                    });
-
-                    // 将数据转换为 JSON 格式
-                    jsonData_1 = data;
-                    console.log('jsonData_1:', jsonData_1);
-
-                }
-                else if (event.element.leixing === '自定义2') {
-                    const data = await page.evaluate(() => {
-                        const shops = [];
-                        const shopElements = document.querySelectorAll('.J_content_list');
-
-                        shopElements.forEach(shop => {
-                            const address = shop.querySelector('.shopdetail p:nth-of-type(2)').innerText.replace('地址：', '').trim();
-                            const phone = shop.querySelector('.shopdetail p:nth-of-type(3)').innerText.replace('电话：', '').trim();
-                            const hours = shop.querySelector('.shopdetail p:nth-of-type(4)').innerText.replace('营业时间：', '').trim();
-
-                            shops.push({
+                case 'output':
+                    if (event.element.leixing === '自定义1') {
+                        const data = await page.evaluate(() => {
+                            let reviewCountElement = document.querySelector('.rank .item');
+                            console.log('reviewCountElement:', reviewCountElement);
+                            const reviewCount = reviewCountElement ? reviewCountElement.innerText.trim() : document.querySelector('#reviewCount').innerText.trim();
+                            const address = reviewCountElement ? document.querySelector('.address .item').nextSibling.textContent.trim() : document.querySelector('#address').innerText.trim();
+                            const phone = reviewCountElement ? document.querySelector('.phone .item.J-phone-hide').innerText.trim() : document.querySelector('.tel').innerText.trim();
+                            return {
+                                review_count: reviewCount,
                                 address: address,
-                                phone: phone,
-                                hours: hours
-                            });
+                                phone: phone
+                            };
+                            // const items = [];
+                            // const itemElements = reviewCountElement ? document.querySelectorAll('.promotion .group .item') : document.querySelectorAll('.promosearch-wrapper .J-service-tuan');
+
+                            // itemElements.forEach(item => {
+                            //     const title = item.querySelector('.title').innerText.trim();
+                            //     const price = item.querySelector('.price').innerText.trim();
+                            //     const delPrice = item.querySelector('.del-price').innerText.trim();
+                            //     const soldCount = item.querySelector('.sold-count').innerText.trim();
+
+                            //     items.push({
+                            //         title,
+                            //         price,
+                            //         delPrice,
+                            //         soldCount
+                            //     });
+                            // });
+                            // return {
+                            //     review_count: reviewCount,
+                            //     address: address,
+                            //     phone: phone,
+                            //     items: items
+                            // };
                         });
 
-                        return shops;
-                    });
+                        // 将数据转换为 JSON 格式
+                        jsonData_1 = data;
+                        console.log('jsonData_1:', jsonData_1);
 
-                    // 将数据转换为 JSON 格式
-                    jsonData_2 = data;
-                    console.log('jsonData_2:', jsonData_2);
+                    }
+                    else if (event.element.leixing === '自定义2') {
+                        const data = await page.evaluate(() => {
+                            const shops = [];
+                            const shopElements = document.querySelectorAll('.J_content_list');
 
-                } 
-                break;
+                            shopElements.forEach(shop => {
+                                const address = shop.querySelector('.shopdetail p:nth-of-type(2)').innerText.replace('地址：', '').trim();
+                                const phone = shop.querySelector('.shopdetail p:nth-of-type(3)').innerText.replace('电话：', '').trim();
+                                const hours = shop.querySelector('.shopdetail p:nth-of-type(4)').innerText.replace('营业时间：', '').trim();
+
+                                shops.push({
+                                    address: address,
+                                    phone: phone,
+                                    hours: hours
+                                });
+                            });
+
+                            return shops;
+                        });
+
+                        // 将数据转换为 JSON 格式
+                        jsonData_2 = data;
+                        console.log('jsonData_2:', jsonData_2);
+
+                    }
+                    break;
 
 
 
-            case 'keydown':
-                const key = event.key;
-                await page.keyboard.press(key);
-                if (key === 'Enter') {
-                    enterPressed = true;
-                }
-                break;
-            case 'navigation':
-                if (enterPressed) {
-                    // 已经按下 Enter 键，页面会自动跳转，等待3秒钟
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                    enterPressed = false; // 重置标记
-                } else {
-                    // 正常的导航操作
-                    const url = event.url;
-                    await page.goto(url);
-                    await new Promise(resolve => setTimeout(resolve, 3000)); // 等待3秒钟
-                }
-                break;
-            case 'scroll':
-                const direction = event.direction;
-                const distance = event.distance;
-                if (direction === 'down') {
-                    await page.evaluate((distance) => window.scrollBy(0, distance), distance);
-                } else {
-                    await page.evaluate((distance) => window.scrollBy(0, -distance), distance);
-                }
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                break;
-            default:
-                break;
-        }
-        count++;
+                case 'keydown':
+                    const key = event.key;
+                    await page.keyboard.press(key);
+                    if (key === 'Enter') {
+                        enterPressed = true;
+                    }
+                    break;
+                case 'navigation':
+                    if (enterPressed) {
+                        // 已经按下 Enter 键，页面会自动跳转，等待3秒钟
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        enterPressed = false; // 重置标记
+                    } else {
+                        // 正常的导航操作
+                        const url = event.url;
+                        await page.goto(url);
+                        await new Promise(resolve => setTimeout(resolve, 3000)); // 等待3秒钟
+                    }
+                    break;
+                case 'scroll':
+                    const direction = event.direction;
+                    const distance = event.distance;
+                    if (direction === 'down') {
+                        await page.evaluate((distance) => window.scrollBy(0, distance), distance);
+                    } else {
+                        await page.evaluate((distance) => window.scrollBy(0, -distance), distance);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    break;
+                default:
+                    break;
+            }
+            count++;
         } catch (error) {
             console.error(`An error occurred in the ${type} case:`, error);
         }
@@ -716,12 +722,15 @@ export default async function handler(req, res) {
         console.log('check_5');
     }
     const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
+    // const runoutput = {
+    //     ...jsonData_1,
+    //     ...jsonData_2
+    // };
     const runoutput = {
-        ...jsonData_1,
-        ...jsonData_2
+        ...jsonData_1
     };
     console.log('jsonData_1_f:', jsonData_1);
-    console.log('jsonData_2_f:', jsonData_2);
+    // console.log('jsonData_2_f:', jsonData_2);
     console.log('runoutput:', runoutput);
 
 

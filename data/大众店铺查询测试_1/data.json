@@ -20,9 +20,9 @@
             "id": "",
             "className": "link onecity",
             "name": "",
-            "innerText": "长沙"
+            "innerText": "北京"
         },
-        "value": "长沙",
+        "value": "北京",
         "time": "2024-06-16T03:08:55.448Z",
         "type": "click"
     },
@@ -150,37 +150,37 @@
         "loopCount": 50,
         "type": "loop"
     },
-{
-    "loopEvents": [
-        {
-            "element": {
-                "tagName": "A",
-                "id": "",
-                "className": "",
-                "name": "",
-                "innerText": "",
-                "leixing": "自定义x1"
-                
+    {
+        "loopEvents": [
+            {
+                "element": {
+                    "tagName": "A",
+                    "id": "",
+                    "className": "",
+                    "name": "",
+                    "innerText": "",
+                    "leixing": "自定义x1"
+                    
+                },
+                "time": "2024-06-16T03:09:30.388Z",
+                "type": "click"
             },
-            "time": "2024-06-16T03:09:30.388Z",
-            "type": "click"
-        },
-        {
-            "element": {
-                "tagName": "",
-                "id": "",
-                "className": "",
-                "name": "",
-                "innerText": "",
-                "leixing": "自定义x2"
-            },
-            "time": "2024-06-16T03:09:31.713Z",
-            "type": "output"
-        }
-    ],
-    "loopCount": 50,
-    "type": "loop1"
-}
+            {
+                "element": {
+                    "tagName": "",
+                    "id": "",
+                    "className": "",
+                    "name": "",
+                    "innerText": "",
+                    "leixing": "自定义x2"
+                },
+                "time": "2024-06-16T03:09:31.713Z",
+                "type": "output"
+            }
+        ],
+        "loopCount": 50,
+        "type": "loop1"
+    }
     
 ]
 

@@ -20,9 +20,9 @@
             "id": "",
             "className": "link onecity",
             "name": "",
-            "innerText": "长沙"
+            "innerText": "北京"
         },
-        "value": "长沙",
+        "value": "北京",
         "time": "2024-06-16T03:08:55.448Z",
         "type": "click"
     },
@@ -34,10 +34,10 @@
             "name": "",
             "innerText": "",
             "placeholder": "搜索商户名、地址、菜名、外卖等",
-            "value": "巴斯跃动少儿成长中心（五江店）",
+            "value": "name",
             "label": ""
         },
-        "value": "巴斯跃动少儿成长中心（五江店）",
+        "value": "name",
         "time": "2024-06-16T03:09:04.388Z",
         "type": "input"
     },
@@ -104,18 +104,7 @@
         "distance": 500,
         "time": "2024-06-16T03:10:15.638Z",
         "type": "scroll"
-    },
-    {
-        "element": {
-            "tagName": "",
-            "id": "",
-            "className": "",
-            "name": "",
-            "innerText": "",
-            "leixing": "自定义2"
-        },
-        "time": "2024-06-16T03:10:20.713Z",
-        "type": "output"
     }
 ]
+
 

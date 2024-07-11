@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     let page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
     const path = require('path');
-    const cookiesPath = path.join(process.cwd(), 'pages','api', 'cookies.json');
+    const cookiesPath = path.join(process.cwd(), 'pages', 'api', 'cookies.json');
     const cookiesString = fs.readFileSync(cookiesPath, 'utf8');
     const cookies = JSON.parse(cookiesString);
 
@@ -99,31 +99,6 @@ export default async function handler(req, res) {
     await page.evaluate(async () => {
         Object.defineProperty(navigator, 'webdriver', { get: () => false })
     })
-
-    // 设置 cookies
-    // await page.setCookie(...cookies);
-
-    // 打印已设置的 cookies 以进行验
-
-
-    // const screenshotDir = path.resolve(__dirname, 'screenshots');
-    // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
-
-    // // 创建截图目录
-    // if (!fs.existsSync(screenshotDir)) {
-    //     fs.mkdirSync(screenshotDir);
-    // }
-
-    // const client = await page.target().createCDPSession();
-    // await client.send('Page.startScreencast', { format: 'jpeg', everyNthFrame: 5 });
-    // let frameCount = 0;
-    // client.on('Page.screencastFrame', ({ data, sessionId }) => {
-    //     const buffer = Buffer.from(data, 'base64');
-    //     fs.writeFileSync(path.resolve(screenshotDir, `frame_${frameCount++}.jpeg`), buffer);
-    //     client.send('Page.screencastFrameAck', { sessionId });
-    // });
-
-    // 创建一个对象来存储监控结果
 
     const monitorResults = {
         clicks: [],
@@ -227,7 +202,7 @@ export default async function handler(req, res) {
     let data = [];
 
 
-    async function handleEvent(event) {
+    async function handleEvent(event,i) {
         const { type, time } = event;
         console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -266,7 +241,8 @@ export default async function handler(req, res) {
                     console.log('clickSelector:', clickSelector);
                     console.log('isXPath_click:', isXPath_click);
                     console.log('leixing:', event.element.leixing);
-                    const cliclValue = event.value;
+                    // const cliclValue = event.value;
+                    const cliclValue = i;
 
 
 
@@ -301,8 +277,6 @@ export default async function handler(req, res) {
                             await page.click(clickSelector);
                         }
                     } else if (event.element.leixing === '自定义1') {
-                        console.log('点击“刊登管理”菜单项以展开子菜单');
-
                         await page.evaluate(async () => {
                             const menuTitle = document.querySelector('.ivu-menu-submenu-title');
                             console.log('menuTitle', menuTitle);
@@ -323,70 +297,18 @@ export default async function handler(req, res) {
                                 }
                             }
                         });
-                    } else if (event.element.leixing === '自定义2') {
+                    } else if (event.element.leixing === '自定义0') {
                         try {
                             await page.evaluate(async (cliclValue) => {
                                 // 查找所有具有特定样式的标签元素
-                                const labels = document.querySelectorAll('.ivu-form-item-label[style="width: 60px;"]');
-
-                                // 迭代这些标签以找到包含 "店铺" 文本的标签
-                                let storeFormItem = null;
-                                labels.forEach(label => {
-                                    if (label.textContent.trim() === "店铺") {
-                                        storeFormItem = label.parentElement;
-                                    }
-                                });
-
-                                if (storeFormItem) {
-                                    const selectButton = storeFormItem.querySelector('.ivu-select-selection');
-                                    if (selectButton) {
-                                        console.log('Found the select button:', selectButton);
-
-                                        // 确保元素在视图中
-                                        selectButton.scrollIntoView();
-
-                                        // 手动创建并触发点击事件
-                                        const clickEvent = new MouseEvent('click', {
-                                            view: window,
-                                            bubbles: true,
-                                            cancelable: true
-                                        });
-
-                                        selectButton.dispatchEvent(clickEvent);
-                                        console.log('Click event dispatched on select button');
-
-                                        // 设置适当的延时，确保下拉菜单有时间加载
-                                        await new Promise(resolve => setTimeout(resolve, 1000));
-
-                                        // 使用XPath选择包含“Sadong”文本的下拉项
-                                        console.log("cliclValue", cliclValue)
-                                        const item = document.evaluate(`//li[contains(@class, 'ivu-select-item') and text()="${cliclValue}"]`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-
-                                        if (item) {
-                                            console.log('Found the Sadong item:', item);
-                                            item.scrollIntoView();
-
-                                            // 手动创建并触发点击事件
-                                            const itemClickEvent = new MouseEvent('click', {
-                                                view: window,
-                                                bubbles: true,
-                                                cancelable: true
-                                            });
-
-                                            item.dispatchEvent(itemClickEvent);
-                                            console.log('Click event dispatched on Sadong item');
-                                        } else {
-                                            console.error("无法找到包含“Sadong”的下拉项");
-                                        }
-                                    } else {
-                                        console.error("无法找到选择器 .ivu-select-selection 对应的元素");
-                                    }
-                                } else {
-                                    console.error("无法找到包含 '店铺' 标签的 .ivu-form-item 元素");
-                                }
+                                let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+                                let result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); // 获取所有匹配的元素
+                                let element = result.snapshotItem(cliclValue); // 获取元素
+                                console.log('element:', element);
+                                element.querySelector('a').click()
                             }, cliclValue);
-                            await new Promise(resolve => setTimeout(resolve, 10000));
-                            console.log('自定义2_done');
+                            // await new Promise(resolve => setTimeout(resolve, 10000));
+                            console.log('自定义0_done');
                         } catch (error) {
                             console.error('An error occurred:', error);
                         }
@@ -607,52 +529,86 @@ export default async function handler(req, res) {
 
                 case 'output':
                     if (event.element.leixing === '自定义1') {
+                        // const newData = await page.evaluate(() => {
+                        //     return new Promise((resolve) => {
+                        //         setTimeout(() => {
+                        //             // 获取正文内容
+                        //             let titleElement = document.querySelector('title');
+                        //             let titleText = titleElement ? titleElement.innerText : '';
+                        //             const bodyElement = document.querySelector('div.transcription > div > div > div > p span.underline-red');
+                        //             const bodyContent = bodyElement ? bodyElement.innerHTML.trim().replace(/<br>/g, ' ') : '';
+
+                        //             // 获取 "Verweisungen" 部分的内容
+                        //             const verweisungenElement = document.querySelector('div.transcription > div > div > div > table.unboxed_left tr td:nth-child(2)');
+                        //             const verweisungenContent = verweisungenElement ? verweisungenElement.innerHTML.trim() : '';
+
+                        //             // 将内容按行分割并去除HTML标签
+                        //             const verweisungenLines = verweisungenContent.split('<br>').map(line => line.replace(/<[^>]+>/g, '').trim());
+
+                        //             // 拆分 "Verweisungen" 为名称和索引
+                        //             const verweisungen = verweisungenLines.map(line => {
+                        //                 const parts = line.split(/\s+(?=\d)/); // 按照数字前的空格分割
+                        //                 const name = parts[0].trim();
+                        //                 let index = parts[1] ? parts[1].trim() : '';
+                        //                 if (name === 'E. und Entscheiden') {
+                        //                     index = index.replace(/&nbsp;.*$/, ''); // 移除多余的部分
+                        //                 }
+                        //                 return { name, index };
+                        //             }).filter(item => item.name && item.index);
+
+                        //             // 获取 "Literatur" 部分的内容
+                        //             let literaturElement = document.querySelector('div.transcription > div > div > div > p:nth-of-type(3)');
+                        //             let literaturContent = literaturElement ? literaturElement.innerHTML.trim() : '';
+
+                        //             // 检查 literaturContent 是否包含 `<br>`，如果不包含，则继续检查下一个 <p> 元素
+                        //             let pIndex = 4;
+                        //             while (!literaturContent.includes('<br>') && pIndex <= 5) {
+                        //                 literaturElement = document.querySelector(`div.transcription > div > div > div > p:nth-of-type(${pIndex})`);
+                        //                 literaturContent = literaturElement ? literaturElement.innerHTML.trim() : '';
+                        //                 pIndex++;
+                        //             }
+
+                        //             // 将内容按行分割并去除HTML标签
+                        //             const literaturLines = literaturContent.split('<br>').map(line => line.replace(/<[^>]+>/g, '').trim());
+
+                        //             // 构建 JSON 对象
+                        //             const result = {
+                        //                 title: titleText,
+                        //                 body: bodyContent,
+                        //                 verweisungen: verweisungen,
+                        //                 literatur: literaturLines.filter(line => line)
+                        //             };
+                        //             console.log('result:', result);
+                        //             resolve(result);
+
+                        //         }, 5000);
+                        //     });
+                        // });
+
                         const newData = await page.evaluate(() => {
                             return new Promise((resolve) => {
                                 setTimeout(() => {
-                                    const shopListContainer = document.querySelector('#shop-all-list');
-                                    const shops = [];
-                                    const shopList = shopListContainer.querySelectorAll('li');
-                                    shopList.forEach(shop => {
-                                        const nameElement = shop.querySelector('.tit h4');
-                                        const linkElement = shop.querySelector('.tit a');
-                                        const imgElement = shop.querySelector('.pic img');
-                                        const reviewElement = shop.querySelector('.review-num b');
-                                        const priceElement = shop.querySelector('.mean-price b');
-                                        const tagElements = shop.querySelectorAll('.tag-addr .tag');
-                                        const dealElements = shop.querySelectorAll('.si-deal a');
+                                    // 获取页面标题
+                                    let titleElement = document.querySelector('title');
+                                    let titleText = titleElement ? titleElement.innerText : '';
 
-                                        const name = nameElement ? nameElement.innerText.trim() : '';
-                                        const link = linkElement ? linkElement.href : '';
-                                        const image = imgElement ? imgElement.src : '';
-                                        const reviewCount = reviewElement ? reviewElement.innerText.trim() : '';
-                                        const price = priceElement ? priceElement.innerText.trim() : '';
+                                    // 获取所有 p 元素
+                                    const pElements = document.querySelectorAll('div.transcription > div > div > div > p');
 
-                                        const tags = [];
-                                        tagElements.forEach(tagElement => {
-                                            tags.push(tagElement.innerText.trim());
-                                        });
+                                    let bodyContent = '';
 
-                                        const deals = [];
-                                        dealElements.forEach(dealElement => {
-                                            deals.push({
-                                                title: dealElement.title,
-                                                link: dealElement.href
-                                            });
-                                        });
-
-                                        shops.push({
-                                            name,
-                                            link,
-                                            image,
-                                            review_count: reviewCount,
-                                            price,
-                                            tags,
-                                            deals
-                                        });
+                                    // 遍历所有 p 元素，将其内容保存到 body 中
+                                    pElements.forEach(p => {
+                                        bodyContent += p.innerHTML.trim().replace(/<[^>]+>/g, '') + ' ';
                                     });
+                                   
+                                    // 构建 JSON 对象
+                                    const result = {
+                                        title: titleText,
+                                        body: bodyContent.trim(),
+                                    };
 
-                                    resolve(shops);
+                                    resolve(result);
                                 }, 5000);
                             });
                         });
@@ -660,6 +616,17 @@ export default async function handler(req, res) {
                         // 将数据转换为 JSON 格式
                         console.log('newData:', newData);
                         data.push(newData);
+
+                        const jsonData = JSON.stringify(newData, null, 2);
+                        // 定义文件路径和名称
+                        const filePath = path.join(process.cwd(), 'data', '卡片笔记内容下载', 'output', `${newData.title}.json`);
+                        fs.writeFile(filePath, jsonData, (err) => {
+                            if (err) {
+                                console.error('Error writing file:', err);
+                            } else {
+                                console.log('File written successfully');
+                            }
+                        });
                         // console.log('data:', data);
 
                     }
@@ -691,11 +658,13 @@ export default async function handler(req, res) {
 
                     else if (event.element.leixing === '自定义0') {
                         const data = await page.evaluate(() => {
-                            const shops = [];
-                            const links = document.querySelectorAll('#region-nav a');
-                            let texts = Array.from(links).map(link => link.innerText);
+                            let buttons = document.querySelectorAll('[class*="MuiButton-label-"]');
+                            let lastButton = buttons[buttons.length - 1]; // 获取最后一个按钮
+                            let text = lastButton.innerText; // 获取按钮的文本内容
+                            let number = parseInt(text); // 将文本内容转换为数字
+                            console.log('number:', number);
                             // 将数据转换为 JSON 格
-                            return texts;
+                            return number;
                         });
 
                         // 将数据转换为 JSON 格式
@@ -755,53 +724,112 @@ export default async function handler(req, res) {
         await new Promise(resolve => setTimeout(resolve, 2000));
         try {
             if (type === 'loop') {
-                for (let text of jsonData_0) {
-                    console.log('Processing text:', text);
+                for (let i = 3; i < jsonData_0; i++) {
+                    // if (text === '西城区') {
+                    //     continue;
+                    // }
+                    console.log('Processing i:', i);
 
                     try {
+                        let url = `https://niklas-luhmann-archiv.de/bestand/zettelkasten/1/auszug/01?page=${i}`;
+                        await page.goto(url, { waitUntil: 'load', timeout: 60000 });
                         // 确保页面完全加载
-                        await page.goto(page.url(), { waitUntil: 'load', timeout: 60000 });
+                        // await page.goto(page.url(), { waitUntil: 'load', timeout: 60000 });
                         console.log('Page loaded.');
-
-                        // 等待一定时间确保页面渲染完成
                         await new Promise(resolve => setTimeout(resolve, 2000));
 
+                        // // 查找元素并捕获错误
+                        // const foundLink_0 = await page.evaluate((text) => {
+                        //     try {
+                        //         let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                        //         let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                        //         let linkElement = xpathResult.singleNodeValue;
+                        //         return linkElement !== null; // 返回是否找到链接
+                        //     } catch (error) {
+                        //         console.error('Error in evaluate for finding link:', error);
+                        //         return false;
+                        //     }
+                        // }, text);
+
+                        // if (foundLink_0) {
+                        //     console.log('Link found for text:', text);
+
+                        //     // 点击链接并等待导航完成，最多等待3秒钟
+                        //     await Promise.race([
+                        //         page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                        //         page.evaluate((text) => {
+                        //             let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                        //             let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                        //             let linkElement = xpathResult.singleNodeValue;
+                        //             if (linkElement) {
+                        //                 linkElement.click();
+                        //             }
+                        //         }, text),
+                        //         new Promise(resolve => setTimeout(resolve, 3000))
+                        //     ]);
+
+                        //     console.log('Navigation completed or timeout for text:', text);
+
+                        //     // 获取总页数
+
+                        // } else {
+                        //     console.log(`没有找到文本为 "${text}" 的链接`);
+                        // }
+
+                        // // 等待一定时间确保页面渲染完成
+                        // await new Promise(resolve => setTimeout(resolve, 2000));
+
                         // 查找元素并捕获错误
-                        const foundLink = await page.evaluate((text) => {
-                            try {
-                                let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
-                                let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                let linkElement = xpathResult.singleNodeValue;
-                                return linkElement !== null; // 返回是否找到链接
-                            } catch (error) {
-                                console.error('Error in evaluate for finding link:', error);
-                                return false;
-                            }
-                        }, text);
+                        // const foundLink = await page.evaluate(() => {
+                        //     try {
+                        //         let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+                        //         let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                        //         let linkElement = xpathResult.singleNodeValue;
+                        //         return linkElement // 返回是否找到链接
+                        //     } catch (error) {
+                        //         console.error('Error in evaluate for finding link:', error);
+                        //         return false;
+                        //     }
+                        // });
+                        const xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+                        // await new Promise(resolve => setTimeout(resolve, 3000));
+                        await page.waitForFunction(
+                            (xpath) => !!document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue,
+                            { timeout: 5000 },
+                            xpath); // 等待 XPath 出现，最多等待 5000 毫秒
+
+                        const foundLink = await page.evaluate((xpath) => {
+                            let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                            let linkElement = xpathResult.singleNodeValue;
+                            return linkElement !== null; // 返回是否找到链接
+                        }, xpath);
+  
+                        console.log('foundLink:', foundLink);   
 
                         if (foundLink) {
-                            console.log('Link found for text:', text);
+                            console.log('Link found for text:', i);
 
-                            // 点击链接并等待导航完成，最多等待3秒钟
-                            await Promise.race([
-                                page.waitForNavigation({ waitUntil: 'networkidle0' }),
-                                page.evaluate((text) => {
-                                    let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
-                                    let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-                                    let linkElement = xpathResult.singleNodeValue;
-                                    if (linkElement) {
-                                        linkElement.click();
-                                    }
-                                }, text),
-                                new Promise(resolve => setTimeout(resolve, 3000))
-                            ]);
+                            // // 点击链接并等待导航完成，最多等待3秒钟
+                            // await Promise.race([
+                            //     page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                            //     page.evaluate((text) => {
+                            //         let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+                            //         let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                            //         let linkElement = xpathResult.singleNodeValue;
+                            //         if (linkElement) {
+                            //             linkElement.click();
+                            //         }
+                            //     }, text),
+                            //     new Promise(resolve => setTimeout(resolve, 3000))
+                            // ]);
 
-                            console.log('Navigation completed or timeout for text:', text);
+                            // console.log('Navigation completed or timeout for text:', text);
 
                             // 获取总页数
                             const totalPageNumber = await page.evaluate(() => {
-                                let pageLinks = document.querySelectorAll('.page a');
-                                return pageLinks.length > 0 ? parseInt(pageLinks[pageLinks.length - 2].innerText) : 1;
+                                let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+                                let result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); // 获取所有匹配的元素
+                                return result.snapshotLength
                             });
 
                             console.log('Total page number:', totalPageNumber);
@@ -813,87 +841,98 @@ export default async function handler(req, res) {
                             const filename = `output_${dateString}.xlsx`;
 
                             for (let i = 0; i < loopCount; i++) {
+                                
                                 for (const loopEvent of loopEvents) {
                                     try {
-                                        await handleEvent(loopEvent);
+                                        await handleEvent(loopEvent, i);
+
                                     } catch (error) {
                                         console.error(`An error occurred in the loop event:`, error);
                                     }
                                 }
-                                const allHeaders = new Set();
-                                function collectHeaders(data, prefix = '') {
-                                    Object.keys(data).forEach(key => {
-                                        const fullKey = prefix ? `${prefix}_${key}` : key;
-                                        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-                                            collectHeaders(data[key], fullKey);
-                                        } else {
-                                            allHeaders.add(fullKey);
-                                        }
-                                    });
-                                }
-                                // 遍历每个对象，收集所有可能的列名称
-                                data.forEach(dataArray => {
-                                    dataArray.forEach(data => {
-                                        collectHeaders(data);
-                                    });
-                                });
+                                await page.goBack(); // 返回上一页
 
-                                // 将所有列名称转换为数组
-                                const allHeadersArray = Array.from(allHeaders);
+                                const xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+                                // await new Promise(resolve => setTimeout(resolve, 3000));
+                                await page.waitForFunction(
+                                    (xpath) => !!document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue,
+                                    { timeout: 50000 },
+                                    xpath); // 等待 XPath 出现，最多等待 5000 毫秒
 
-                                // 创建一个新的工作簿和工作表
-                                const workbook = new Workbook();
-                                const worksheet = workbook.addWorksheet('Sheet1');
+                                // const allHeaders = new Set();
+                                // function collectHeaders(data, prefix = '') {
+                                //     Object.keys(data).forEach(key => {
+                                //         const fullKey = prefix ? `${prefix}_${key}` : key;
+                                //         if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                //             collectHeaders(data[key], fullKey);
+                                //         } else {
+                                //             allHeaders.add(fullKey);
+                                //         }
+                                //     });
+                                // }
+                                // // 遍历每个对象，收集所有可能的列名称
+                                // data.forEach(dataArray => {
+                                //     dataArray.forEach(data => {
+                                //         collectHeaders(data);
+                                //     });
+                                // });
 
-                                // 添加标题行
-                                worksheet.addRow(allHeadersArray);
+                                // // 将所有列名称转换为数组
+                                // const allHeadersArray = Array.from(allHeaders);
+
+                                // // 创建一个新的工作簿和工作表
+                                // const workbook = new Workbook();
+                                // const worksheet = workbook.addWorksheet('Sheet1');
+
+                                // // 添加标题行
+                                // worksheet.addRow(allHeadersArray);
 
 
-                                // 增加随机时间间隔
+                                // // 增加随机时间间隔
 
-                                // 遍历每个对象，并构建数据行
-                                data.forEach(dataArray => {
-                                    dataArray.forEach(data => {
-                                        const rowData = {};
+                                // // 遍历每个对象，并构建数据行
+                                // data.forEach(dataArray => {
+                                //     dataArray.forEach(data => {
+                                //         const rowData = {};
 
-                                        function populateRowData(data, prefix = '') {
-                                            Object.keys(data).forEach(key => {
-                                                const fullKey = prefix ? `${prefix}_${key}` : key;
-                                                if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-                                                    populateRowData(data[key], fullKey);
-                                                } else {
-                                                    rowData[fullKey] = data[key];
-                                                }
-                                            });
-                                        }
+                                //         function populateRowData(data, prefix = '') {
+                                //             Object.keys(data).forEach(key => {
+                                //                 const fullKey = prefix ? `${prefix}_${key}` : key;
+                                //                 if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                //                     populateRowData(data[key], fullKey);
+                                //                 } else {
+                                //                     rowData[fullKey] = data[key];
+                                //                 }
+                                //             });
+                                //         }
 
-                                        populateRowData(data);
+                                //         populateRowData(data);
 
-                                        // 添加数据行
-                                        const row = allHeadersArray.map(header => rowData[header] || '');
-                                        worksheet.addRow(row);
-                                    });
-                                });
-                                // 写入 Excel 文件
-                                await workbook.xlsx.writeFile(filename)
-                                    .then(() => {
-                                        console.log('Excel 文件已成功创建！');
-                                    })
-                                    .catch(error => {
-                                        console.error('创建 Excel 文件时出错：', error);
-                                    });
+                                //         // 添加数据行
+                                //         const row = allHeadersArray.map(header => rowData[header] || '');
+                                //         worksheet.addRow(row);
+                                //     });
+                                // });
+                                // // 写入 Excel 文件
+                                // await workbook.xlsx.writeFile(filename)
+                                //     .then(() => {
+                                //         console.log('Excel 文件已成功创建！');
+                                //     })
+                                //     .catch(error => {
+                                //         console.error('创建 Excel 文件时出错：', error);
+                                //     });
                                 console.log('保存成功');
 
                                 const randomInterval = getRandomInterval();
                                 console.log(`Waiting for ${randomInterval} milliseconds before next loop iteration`);
                                 await new Promise(resolve => setTimeout(resolve, randomInterval));
-                                
+
                             }
                         } else {
-                            console.log(`没有找到文本为 "${text}" 的链接`);
+                            console.log(`没有找到文本为 "${i}" 的链接`);
                         }
                     } catch (error) {
-                        console.error(`An error occurred while processing text "${text}":`, error);
+                        console.error(`An error occurred while processing text "${i}":`, error);
                     }
                 }
             } else {

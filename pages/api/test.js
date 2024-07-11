@@ -194,16 +194,38 @@ const action = (async () => {
 // const xpath = "//button[text()='查询']";
 // const xpath = "//a[text()='好评']";
 // const xpath = "//a/span[text()='行政区']";
-// const text='西城区'
-// const xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
-// const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-// const linkElement = xpathResult.singleNodeValue;
-// console.log('linkElement:', linkElement);
-// if (linkElement) {
-//     linkElement.click();
-// } else {
-//     console.log('没有找到匹配的链接');
-// }
+const text='西城区'
+const xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+const linkElement = xpathResult.singleNodeValue;
+console.log('linkElement:', linkElement);
+if (linkElement) {
+    linkElement.click();
+} else {
+    console.log('没有找到匹配的链接');
+}
 
 
 
+// let buttons = document.querySelectorAll('.MuiButton-label-323');
+// let lastButton = buttons[buttons.length - 1]; // 获取最后一个按钮
+// let text = lastButton.innerText; // 获取按钮的文本内容
+// let number = parseInt(text); // 将文本内容转换为数字
+
+// console.log('number:', number);
+
+// let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+// let result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); // 获取所有匹配的元素
+// console.log('Total elements:', result.snapshotLength); // 打印元素的总数
+
+// let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+// let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+// let linkElement = xpathResult.singleNodeValue;
+// console.log('linkElement:', linkElement); // 打印元素的总数
+
+// const cliclValue=0
+// let xpath = '/html/body/div/div/main/div/div/div[2]/div[2]/ul/li'; // XPath，选择 ul 下的所有 li 元素
+// let result = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); // 获取所有匹配的元素
+// let element = result.snapshotItem(cliclValue); // 获取元素
+// console.log('element:', element);
+// element.querySelector('a').click()

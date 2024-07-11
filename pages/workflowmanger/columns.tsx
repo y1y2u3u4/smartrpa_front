@@ -176,7 +176,8 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     async function processRows(sortedData: any, dataObjects: string | any[], start: number, step: number) {
         const processedData = [];
 
-        for (let i = start; i < dataObjects.length; i += step) {
+        // for (let i = start; i < dataObjects.length; i += step) {
+        for (let i = start; i < 200; i += step) {
             const row = dataObjects[i];
             
             try {

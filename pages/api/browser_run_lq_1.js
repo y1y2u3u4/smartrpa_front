@@ -78,7 +78,6 @@ export default async function handler(req, res) {
     await page.setViewport({ width: 1280, height: 720 });
     const path = require('path');
     const cookiesPath = path.join(process.cwd(), 'pages', 'api', 'cookies.json');
-    console.log('cookiesPath:', cookiesPath);
     const cookiesString = fs.readFileSync(cookiesPath, 'utf8');
     const cookies = JSON.parse(cookiesString);
 
@@ -223,7 +222,7 @@ export default async function handler(req, res) {
         return count === 1;
     }
     let count = 0;
-    let jsonData_1;
+    let jsonData_0;
     let jsonData_2;
     let data = [];
 
@@ -250,7 +249,7 @@ export default async function handler(req, res) {
                             clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
                         }
                         else {
-                            clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}']`;
+                            clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}'] | //${event.element.tagName.toLowerCase()}/span[text()='${event.element.innerText}']`;
                         }
                         isXPath_click = true;
                     }
@@ -689,6 +688,22 @@ export default async function handler(req, res) {
                         console.log('jsonData_2:', jsonData_2);
 
                     }
+
+                    else if (event.element.leixing === '自定义0') {
+                        const data = await page.evaluate(() => {
+                            const shops = [];
+                            const links = document.querySelectorAll('#region-nav a');
+                            let texts = Array.from(links).map(link => link.innerText);
+                            // 将数据转换为 JSON 格
+                            return texts;
+                        });
+
+                        // 将数据转换为 JSON 格式
+                        jsonData_0 = data;
+                        console.log('jsonData_0:', jsonData_0);
+
+
+                    }
                     break;
 
 
@@ -738,91 +753,190 @@ export default async function handler(req, res) {
         const { type, time } = event;
         console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
-
         try {
             if (type === 'loop') {
-                // 处理循环事件
-                const loopCount = event.loopCount || 1; // 默认循环次数为1
-                const loopEvents = event.loopEvents || []; // 要循环的事件列表
-                const date = new Date();
-                const dateString = date.toISOString().replace(/:/g, '-'); // 将时间中的冒号替换为短横线，因为冒号在文件名中是非法的
-                const filename = `output_${dateString}.xlsx`;
-                for (let i = 0; i < loopCount; i++) {
-                    for (const loopEvent of loopEvents) {
-                        try {
-                            await handleEvent(loopEvent);
-                        } catch (error) {
-                            console.error(`An error occurred in the loop event:`, error);
-                        }
+                for (let text of jsonData_0) {
+                    if (text === '西城区') {
+                        continue;
                     }
-                    const allHeaders = new Set();
+                    console.log('Processing text:', text);
 
-                    // 收集所有可能的列名称的递归函数
-                    function collectHeaders(data, prefix = '') {
-                        Object.keys(data).forEach(key => {
-                            const fullKey = prefix ? `${prefix}_${key}` : key;
-                            if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-                                collectHeaders(data[key], fullKey);
-                            } else {
-                                allHeaders.add(fullKey);
+                    try {
+                        // 确保页面完全加载
+                        await page.goto(page.url(), { waitUntil: 'load', timeout: 60000 });
+                        console.log('Page loaded.');
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // 查找元素并捕获错误
+                        const foundLink_0 = await page.evaluate((text) => {
+                            try {
+                                let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                                let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                let linkElement = xpathResult.singleNodeValue;
+                                return linkElement !== null; // 返回是否找到链接
+                            } catch (error) {
+                                console.error('Error in evaluate for finding link:', error);
+                                return false;
                             }
-                        });
-                    }
+                        }, text);
 
-                    // 遍历每个对象，收集所有可能的列名称
-                    data.forEach(dataArray => {
-                        dataArray.forEach(data => {
-                            collectHeaders(data);
-                        });
-                    });
+                        if (foundLink_0) {
+                            console.log('Link found for text:', text);
 
-                    // 将所有列名称转换为数组
-                    const allHeadersArray = Array.from(allHeaders);
-
-                    // 创建一个新的工作簿和工作表
-                    const workbook = new Workbook();
-                    const worksheet = workbook.addWorksheet('Sheet1');
-
-                    // 添加标题行
-                    worksheet.addRow(allHeadersArray);
-
-                    // 遍历每个对象，并构建数据行
-                    data.forEach(dataArray => {
-                        dataArray.forEach(data => {
-                            const rowData = {};
-
-                            function populateRowData(data, prefix = '') {
-                                Object.keys(data).forEach(key => {
-                                    const fullKey = prefix ? `${prefix}_${key}` : key;
-                                    if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
-                                        populateRowData(data[key], fullKey);
-                                    } else {
-                                        rowData[fullKey] = data[key];
+                            // 点击链接并等待导航完成，最多等待3秒钟
+                            await Promise.race([
+                                page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                                page.evaluate((text) => {
+                                    let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                                    let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    let linkElement = xpathResult.singleNodeValue;
+                                    if (linkElement) {
+                                        linkElement.click();
                                     }
-                                });
+                                }, text),
+                                new Promise(resolve => setTimeout(resolve, 3000))
+                            ]);
+
+                            console.log('Navigation completed or timeout for text:', text);
+
+                            // 获取总页数
+
+                        } else {
+                            console.log(`没有找到文本为 "${text}" 的链接`);
+                        }
+
+                        // 等待一定时间确保页面渲染完成
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // 查找元素并捕获错误
+                        const foundLink = await page.evaluate((text) => {
+                            try {
+                                let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+                                let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                let linkElement = xpathResult.singleNodeValue;
+                                return linkElement !== null; // 返回是否找到链接
+                            } catch (error) {
+                                console.error('Error in evaluate for finding link:', error);
+                                return false;
                             }
+                        }, text);
 
-                            populateRowData(data);
+                        if (foundLink) {
+                            console.log('Link found for text:', text);
 
-                            // 添加数据行
-                            const row = allHeadersArray.map(header => rowData[header] || '');
-                            worksheet.addRow(row);
-                        });
-                    });
+                            // 点击链接并等待导航完成，最多等待3秒钟
+                            await Promise.race([
+                                page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                                page.evaluate((text) => {
+                                    let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+                                    let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    let linkElement = xpathResult.singleNodeValue;
+                                    if (linkElement) {
+                                        linkElement.click();
+                                    }
+                                }, text),
+                                new Promise(resolve => setTimeout(resolve, 3000))
+                            ]);
 
-                    // 写入 Excel 文件
-                    await workbook.xlsx.writeFile(filename)
-                        .then(() => {
-                            console.log('Excel 文件已成功创建！');
-                        })
-                        .catch(error => {
-                            console.error('创建 Excel 文件时出错：', error);
-                        });
-                    console.log('保存成功');
+                            console.log('Navigation completed or timeout for text:', text);
 
-                    const randomInterval = getRandomInterval();
-                    console.log(`Waiting for ${randomInterval} milliseconds before next loop iteration`);
-                    await new Promise(resolve => setTimeout(resolve, randomInterval));
+                            // 获取总页数
+                            const totalPageNumber = await page.evaluate(() => {
+                                let pageLinks = document.querySelectorAll('.page a');
+                                return pageLinks.length > 0 ? parseInt(pageLinks[pageLinks.length - 2].innerText) : 1;
+                            });
+
+                            console.log('Total page number:', totalPageNumber);
+
+                            const loopCount = totalPageNumber || 1;
+                            const loopEvents = event.loopEvents || [];
+                            const date = new Date();
+                            const dateString = date.toISOString().replace(/:/g, '-'); // 将时间中的冒号替换为短横线，因为冒号在文件名中是非法的
+                            const filename = `output_${dateString}.xlsx`;
+
+                            for (let i = 0; i < loopCount; i++) {
+                                for (const loopEvent of loopEvents) {
+                                    try {
+                                        await handleEvent(loopEvent);
+                                    } catch (error) {
+                                        console.error(`An error occurred in the loop event:`, error);
+                                    }
+                                }
+                                const allHeaders = new Set();
+                                function collectHeaders(data, prefix = '') {
+                                    Object.keys(data).forEach(key => {
+                                        const fullKey = prefix ? `${prefix}_${key}` : key;
+                                        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                            collectHeaders(data[key], fullKey);
+                                        } else {
+                                            allHeaders.add(fullKey);
+                                        }
+                                    });
+                                }
+                                // 遍历每个对象，收集所有可能的列名称
+                                data.forEach(dataArray => {
+                                    dataArray.forEach(data => {
+                                        collectHeaders(data);
+                                    });
+                                });
+
+                                // 将所有列名称转换为数组
+                                const allHeadersArray = Array.from(allHeaders);
+
+                                // 创建一个新的工作簿和工作表
+                                const workbook = new Workbook();
+                                const worksheet = workbook.addWorksheet('Sheet1');
+
+                                // 添加标题行
+                                worksheet.addRow(allHeadersArray);
+
+
+                                // 增加随机时间间隔
+
+                                // 遍历每个对象，并构建数据行
+                                data.forEach(dataArray => {
+                                    dataArray.forEach(data => {
+                                        const rowData = {};
+
+                                        function populateRowData(data, prefix = '') {
+                                            Object.keys(data).forEach(key => {
+                                                const fullKey = prefix ? `${prefix}_${key}` : key;
+                                                if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                                    populateRowData(data[key], fullKey);
+                                                } else {
+                                                    rowData[fullKey] = data[key];
+                                                }
+                                            });
+                                        }
+
+                                        populateRowData(data);
+
+                                        // 添加数据行
+                                        const row = allHeadersArray.map(header => rowData[header] || '');
+                                        worksheet.addRow(row);
+                                    });
+                                });
+                                // 写入 Excel 文件
+                                await workbook.xlsx.writeFile(filename)
+                                    .then(() => {
+                                        console.log('Excel 文件已成功创建！');
+                                    })
+                                    .catch(error => {
+                                        console.error('创建 Excel 文件时出错：', error);
+                                    });
+                                console.log('保存成功');
+
+                                const randomInterval = getRandomInterval();
+                                console.log(`Waiting for ${randomInterval} milliseconds before next loop iteration`);
+                                await new Promise(resolve => setTimeout(resolve, randomInterval));
+
+                            }
+                        } else {
+                            console.log(`没有找到文本为 "${text}" 的链接`);
+                        }
+                    } catch (error) {
+                        console.error(`An error occurred while processing text "${text}":`, error);
+                    }
                 }
             } else {
                 await handleEvent(event);
@@ -841,8 +955,6 @@ export default async function handler(req, res) {
 
     const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
     console.log('data:', data);
-
-
 
     res.write(`\n${JSON.stringify({ monitorResults })}\n`);
     // res.write(`${JSON.stringify({ runoutput })}\n`);

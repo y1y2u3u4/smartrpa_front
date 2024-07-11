@@ -29,12 +29,12 @@ function getPuppeteerPath() {
 
 export default async function handler(req, res) {
     let latestCookies;
-    let puppeteerPath = getPuppeteerPath();
-    if (!puppeteerPath) {
-        console.log('Puppeteer not found. Downloading...');
-        puppeteerPath = await downloadPuppeteer();
-        console.log('Puppeteer downloaded to:', puppeteerPath);
-    }
+    // let puppeteerPath = getPuppeteerPath();
+    // if (!puppeteerPath) {
+    //     console.log('Puppeteer not found. Downloading...');
+    //     puppeteerPath = await downloadPuppeteer();
+    //     console.log('Puppeteer downloaded to:', puppeteerPath);
+    // }
 
     async function getCookiesAndWriteToResponse(page) {
         if (!page) {
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
 
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: puppeteerPath,
+        // executablePath: puppeteerPath,
         headless: false, // 启用有表头模式
         defaultViewport: {
             width: 1300,
