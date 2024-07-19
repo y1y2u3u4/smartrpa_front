@@ -34,7 +34,7 @@ export function Input_api() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="gpt-3.5-turbo">gpt-3.5-turbo</SelectItem>
-          {/* <SelectItem value="gpt-4o">gpt-4o</SelectItem> */}
+          <SelectItem value="gpt-4o-mini">gpt-4o-mini</SelectItem>
         </SelectContent>
       </Select>
       <Input placeholder=" Input your OpenAI API Key" value={apiKey} onChange={handleApiKeyChange} type="password" />
