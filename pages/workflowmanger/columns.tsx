@@ -7,6 +7,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import React, { useEffect, useState } from 'react';
 import { Checkbox } from "@/components/ui/checkbox"
+import * as XLSX from 'xlsx';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -160,13 +161,41 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
     };
 
 
-    const processRow = async (sortedData:any,row: any) => {
+    // const processRow = async (sortedData:any,row: any) => {
+    //     try {
+    //         console.log('Processing row:', row);
+    //         console.log('Processing row_name:', row.name);
+
+    //         const { runoutput, runresult } = await fetchWsEndpoint(sortedData,row);
+    //         console.log('runoutput:', runoutput);
+    //         console.log('runresult:', runresult);
+    //         return { ...row, output: runoutput, status: runresult };
+    //     } catch (error) {
+    //         console.error('Error processing row:', error);
+    //         return { ...row, status: 'Error' };
+    //     }
+    // };
+
+    //调用 api 接口处理
+    const processRow = async (sortedData: any, row: any) => {
         try {
             console.log('Processing row:', row);
-            const { runoutput, runresult } = await fetchWsEndpoint(sortedData,row);
-            console.log('runoutput:', runoutput);
-            console.log('runresult:', runresult);
-            return { ...row, output: runoutput, status: runresult };
+            console.log('Processing row_name:', row.name);
+
+            const allData = await getAllData(row.name);
+            console.log('All Data:', allData);
+            return {
+                ...row,
+                gaodeName: allData.gaode.name,
+                gaodeAddress: allData.gaode.address,
+                gaodePhone: allData.gaode.phone,
+                tengxunName: allData.tengxun.name,
+                tengxunAddress: allData.tengxun.address,
+                tengxunPhone: allData.tengxun.phone,
+                baiduName: allData.baidu.name,
+                baiduAddress: allData.baidu.address,
+                baiduPhone: allData.baidu.phone
+            };
         } catch (error) {
             console.error('Error processing row:', error);
             return { ...row, status: 'Error' };
@@ -177,7 +206,7 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         const processedData = [];
 
         // for (let i = start; i < dataObjects.length; i += step) {
-        for (let i = start; i < 200; i += step) {
+        for (let i = start; i < 1167; i += step) {
             const row = dataObjects[i];
             
             try {
@@ -191,7 +220,7 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
             
         }
 
-        // try {
+        // try 
         //     const processedRow = await processRow(sortedData, dataObjects);
         //     console.log('processedRow:', processedRow);
         //     processedData.push(processedRow);
@@ -212,7 +241,6 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         }
         const processedData=await Promise.all(promises);
         console.log('processedData:', processedData);
-        // const flatProcessedData = processedData.flat();
         return processedData;
     };
 
@@ -322,6 +350,102 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         } catch (e) {
             console.error('Error fetching:', e);
         }
+    };
+
+
+    const getData_gaode = async (keywords: string) => {
+        try {
+            const url = `https://restapi.amap.com/v5/place/text?keywords=${encodeURIComponent(keywords)}&region=北京市&key=e5fa6ceff746bd2728fd7ab09823141c&show_fields=business`;
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Data:', data);
+
+                // 提取 pois 中的第一个对象的名称和电话字段
+                if (data.pois && data.pois.length > 0) {
+                    const firstPoi = data.pois[0];
+                    const result = {
+                        name: firstPoi.name,
+                        address: firstPoi.address,
+                        phone: firstPoi.business.tel
+                    };
+                    console.log('Extracted Data:', result);
+                    return result;
+                } else {
+                    console.error('No POIs found.');
+                }
+            } else {
+                console.error('Server error:', await res.text());
+            }
+        } catch (e) {
+            console.error('Error fetching:', e);
+        }
+    };
+
+    const getData_tengxun = async (keywords: string) => {
+        try {
+            const res = await fetch('/api/getData_tengxun', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ keywords })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('data.result:', data);
+                return data;
+            } else {
+                console.error('Server error:', await res.text());
+            }
+        } catch (e) {
+            console.error('Error fetching:', e);
+        }
+    };
+
+
+
+    const getData_baidu = async (keywords: string) => {
+        try {
+            const res = await fetch('/api/getData_baidu', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ keywords })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('data.result:', data);
+                return data;
+            } else {
+                console.error('Server error:', await res.text());
+            }
+        } catch (e) {
+            console.error('Error fetching:', e);
+        }
+    };
+
+
+    const getAllData = async (keywords: string) => {
+        const [gaodeData, tengxunData, baiduData] = await Promise.all([
+            getData_gaode(keywords),
+            getData_tengxun(keywords),
+            getData_baidu(keywords)
+        ]);
+
+
+        
+        return {
+            gaode: gaodeData || { name: null, address: null, phone: null },
+            tengxun: tengxunData || { name: null, address: null, phone: null },
+            baidu: baiduData || { name: null, address: null, phone: null }
+        };
     };
 
     const handleRun = async () => {

@@ -1,6 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 const { Workbook } = require('exceljs');
+const bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+
+// 增加请求体的大小限制为 10mb
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+
 
 export default async function handler(req, res) {
     
