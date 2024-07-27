@@ -13,6 +13,10 @@ type ExcelDataState = {
   setWorkflowData_final: Dispatch<SetStateAction<any>>;
   workflowurl: any;
   setWorkflowurl: Dispatch<SetStateAction<any>>;
+  cityname: any;
+  setCityname: Dispatch<SetStateAction<any>>;
+  keyword: any;
+  setKeyword: Dispatch<SetStateAction<any>>;
 };
 
 // 创建一个新的 Context 对象，并提供一个默认值
@@ -29,6 +33,10 @@ const ExcelDataContext = createContext<ExcelDataState>({
   setWorkflowData_final: () => { },
   workflowurl: null,
   setWorkflowurl: () => { },
+  cityname: null,
+  setCityname: () => { },
+  keyword: null,
+  setKeyword: () => { },
 });
 
 // 创建一个 Provider 组件
@@ -39,13 +47,15 @@ export const ExcelDataProvider = ({ children }: { children: React.ReactNode }) =
   const [workflowData, setWorkflowData] = useState<any>(null);
   const [workflowData_final, setWorkflowData_final] = useState<any>(null);
   const [workflowurl, setWorkflowurl] = useState<any>(null);
+  const [cityname, setCityname] = useState<any>(null);
+  const [keyword, setKeyword] = useState<any>(null);
 
   // useEffect(() => {
   //   console.log('excelData', excelData);
   // }, [excelData]); // 依赖项数组中包含 excelData
 
   return (
-    <ExcelDataContext.Provider value={{ excelData, setExcelData, shuruData, setShuruData, shuruData_new, setShuruData_new, workflowData, setWorkflowData, workflowData_final, setWorkflowData_final, workflowurl, setWorkflowurl }}>
+    <ExcelDataContext.Provider value={{ excelData, setExcelData, shuruData, setShuruData, shuruData_new, setShuruData_new, workflowData, setWorkflowData, workflowData_final, setWorkflowData_final, workflowurl, setWorkflowurl, cityname, setCityname, keyword, setKeyword }}>
       {children}
     </ExcelDataContext.Provider>
   );

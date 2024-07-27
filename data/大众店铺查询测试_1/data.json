@@ -20,9 +20,9 @@
             "id": "",
             "className": "link onecity",
             "name": "",
-            "innerText": "北京"
+            "innerText": "城市"
         },
-        "value": "北京",
+        "value": "cityname",
         "time": "2024-06-16T03:08:55.448Z",
         "type": "click"
     },
@@ -37,7 +37,7 @@
             "value": "体适能",
             "label": ""
         },
-        "value": "体适能",
+        "value": "keyword",
         "time": "2024-06-16T03:09:04.388Z",
         "type": "input"
     },

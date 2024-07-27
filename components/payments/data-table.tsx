@@ -144,14 +144,14 @@ export function DataTable<TData, TValue>({
     return (
         <div>
             <div className="flex items-center py-4">
-                <Input
+                {/* <Input
                     placeholder="查找商品名..."
                     value={(table.getColumn(firstField)?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn(firstField)?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
-                />
+                /> */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         {/* <Button variant="outline" className="ml-auto">

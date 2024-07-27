@@ -206,7 +206,7 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         const processedData = [];
 
         // for (let i = start; i < dataObjects.length; i += step) {
-        for (let i = start; i < 1167; i += step) {
+        for (let i = start; i < 1; i += step) {
             const row = dataObjects[i];
             
             try {
@@ -462,6 +462,8 @@ const ActionsCell = ({ row, table }: { row: any, table: any }) => {
         }
        
     };
+
+    
     useEffect(() => {
         console.log("isOpen:", isOpen);
     }, [isOpen]); // 当 isOpen 状态发生变化时执行

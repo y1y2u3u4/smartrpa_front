@@ -192,21 +192,22 @@ const Workflow_1: NextPage<WorkflowType> = memo(({ className = "", workflowData 
         console.log('workflowData', workflowData);
         if (workflowData) {
             setWorkflowData_final(workflowData);
-            const sortedData = cleanAndSortData(workflowData);
+            // const sortedData = cleanAndSortData(workflowData);
+            const sortedData = workflowData;
             setSortedData(sortedData)
             const columnNames = excelData ? excelData[0] : ["clo", "clo"];
-            const actions = transformToActions(sortedData, columnNames);
+            // const actions = transformToActions(sortedData, columnNames);
             // console.log('actions', actions);
-            setActionsData(actions.map((action, index) => {
-                // console.log('action before', action);
-                const newAction = {
-                    ...action,
-                    onActionChange: (url: string, element: string) => handleActionChange(index, url, element)
-                };
-                // console.log('action after', newAction);
-                return newAction;
-            }));
-            const n = actions.length;
+            // setActionsData(actions.map((action, index) => {
+            //     // console.log('action before', action);
+            //     const newAction = {
+            //         ...action,
+            //         onActionChange: (url: string, element: string) => handleActionChange(index, url, element)
+            //     };
+            //     // console.log('action after', newAction);
+            //     return newAction;
+            // }));
+            const n = Array.isArray(sortedData) ? sortedData.length : 0;
             setActions_num(n);
 
         }
@@ -259,7 +260,7 @@ const Workflow_1: NextPage<WorkflowType> = memo(({ className = "", workflowData 
                     <Typography
                         className="[border:none] bg-[transparent] h-10 w-[355px] font-text-sm-semibold font-semibold text-sm text-colors-text-text-brand-secondary-700 max-w-full shrink-0"
                         style={{
-                            height: "40px",
+                            height: "2px",
                             fontSize: "14px",
                             color: "#6941c6",
                             width: "355px",
@@ -269,9 +270,9 @@ const Workflow_1: NextPage<WorkflowType> = memo(({ className = "", workflowData 
                         {`Steps ${actions_num}`}
                     </Typography>
                     <UploadButton />
-                    <DownloadButton />     
+                    {/* <DownloadButton />      */}
                 </div>
-                
+{/*                 
                 <ActionList
                     actions={actionsData}
                     onResultsChange={newResults => {
@@ -280,15 +281,7 @@ const Workflow_1: NextPage<WorkflowType> = memo(({ className = "", workflowData 
                             setActionsData_new(newResults); // 更新为新的结果
                         }
                     }}
-                />
-                <div className="self-stretch overflow-hidden flex flex-col items-center justify-center py-0 px-5 gap-[9px]">
-                    <div className="flex flex-row items-center justify-end gap-[23px]">
-                        <div className="flex flex-row items-center justify-end gap-[12px]">
-                            {/* <RunButton sortedData={sortedData_new} /> */}
-                            <CreatButton sortedData={sortedData_new} />
-                        </div>
-                    </div>
-                </div>
+                /> */}
             </div>
         </div>
     );

@@ -1,30 +1,11 @@
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import { exec } from 'child_process';
-import { downloadAndUploadvideo, getSignedUrl } from "@/lib/s3";
-
+const { Workbook } = require('exceljs');
 
 export default async function handler(req, res) {
     const sortedData = req.body.sortedData;
     const row = req.body.row;
-    const showHead = req.body.selectedValue_1;
-
-    // let cookies;
-    // console.log('req.body.cookie:', req.body.cookie);
-    // if (req.body.cookie) {
-    //     try {
-    //         cookies = req.body.cookie;
-    //     } catch (error) {
-    //         console.error('Error parsing cookie:', error);
-    //         // Handle error as appropriate for your application
-    //     }
-    // } else {
-    //     console.error('No cookie provided');
-    //     // Handle error as appropriate for your application
-    // }
-
     console.log('sortedData_run:', sortedData);
     console.log('row_run:', row);
 
@@ -33,27 +14,46 @@ export default async function handler(req, res) {
         const filteredData = [];
 
         for (const item of arr1) {
-            const { type, key } = item;
+            const { type, key, value, label, element, url } = item;
 
-            if ((type === 'keydown' && key === 'Enter') || type === 'click') {
+            // console.log('Processing item:', item);
+
+            if ((type === 'keydown' && key === 'Enter')) {
                 isNavigationAfterEnterOrClick = true;
                 filteredData.push(item);
+                // console.log('Trigger event detected, adding to filteredData:', item);
             } else if (isNavigationAfterEnterOrClick && type !== 'navigation') {
-                if (type === 'input' && arr2.hasOwnProperty(item.value)) {
-                    filteredData.push({ ...item, value: arr2[item.value] });
+                if (type === 'input' && arr2.hasOwnProperty(value)) {
+                    filteredData.push({ ...item, value: arr2[value] });
+                    // console.log('Input after trigger event, replacing value and adding to filteredData:', { ...item, value: arr2[value] });
+                } else if (type === 'click' && element && element.innerText && arr2.hasOwnProperty(value)) {
+                    // console.log('check_111:', element);
+                    filteredData.push({ ...item, element: { ...element, innerText: arr2[value] } });
+                    // console.log('Click after trigger event, replacing innerText and adding to filteredData:', { ...item, element: { ...element, innerText: arr2[value] } });
+                } else if (type === 'click' && arr2.hasOwnProperty(label)) {
+                    filteredData.push({ ...item, label: arr2[label] });
+                    // console.log('Click after trigger event, replacing label and adding to filteredData:', { ...item, label: arr2[label] });
                 } else {
                     filteredData.push(item);
+                    // console.log('After trigger event, adding to filteredData without changes:', item);
                 }
             } else if (isNavigationAfterEnterOrClick && type === 'navigation') {
                 // 不添加 navigation 事件到 filteredData
                 isNavigationAfterEnterOrClick = false;
+                // console.log('Navigation event after trigger, reset isNavigationAfterEnterOrClick.');
             } else if (!isNavigationAfterEnterOrClick) {
-                if (type === 'navigation' && arr2.hasOwnProperty(item.url)) {
-                    filteredData.push({ ...item, url: arr2[item.url] });
-                } else if (type === 'input' && arr2.hasOwnProperty(item.value)) {
-                    filteredData.push({ ...item, value: arr2[item.value] });
+                if (type === 'navigation' && arr2.hasOwnProperty(url)) {
+                    filteredData.push({ ...item, url: arr2[url] });
+                    // console.log('Navigation event, replacing url and adding to filteredData:', { ...item, url: arr2[url] });
+                } else if (type === 'input' && arr2.hasOwnProperty(value)) {
+                    filteredData.push({ ...item, value: arr2[value] });
+                    // console.log('Input event, replacing value and adding to filteredData:', { ...item, value: arr2[value] });
+                } else if (type === 'click' && element && arr2.hasOwnProperty(value)) {
+                    filteredData.push({ ...item, element: { ...element, innerText: arr2[value] } });
+                    // console.log('Click event, replacing innerText and adding to filteredData:', { ...item, element: { ...element, innerText: arr2[value] } });
                 } else {
                     filteredData.push(item);
+                    // console.log('Adding to filteredData without changes:', item);
                 }
             }
         }
@@ -102,31 +102,6 @@ export default async function handler(req, res) {
     await page.evaluate(async () => {
         Object.defineProperty(navigator, 'webdriver', { get: () => false })
     })
-
-    // 设置 cookies
-    // await page.setCookie(...cookies);
-
-    // 打印已设置的 cookies 以进行验
-
-
-    // const screenshotDir = path.resolve(__dirname, 'screenshots');
-    // const gifFilePath = path.resolve(__dirname, 'screencast.gif');
-
-    // // 创建截图目录
-    // if (!fs.existsSync(screenshotDir)) {
-    //     fs.mkdirSync(screenshotDir);
-    // }
-
-    // const client = await page.target().createCDPSession();
-    // await client.send('Page.startScreencast', { format: 'jpeg', everyNthFrame: 5 });
-    // let frameCount = 0;
-    // client.on('Page.screencastFrame', ({ data, sessionId }) => {
-    //     const buffer = Buffer.from(data, 'base64');
-    //     fs.writeFileSync(path.resolve(screenshotDir, `frame_${frameCount++}.jpeg`), buffer);
-    //     client.send('Page.screencastFrameAck', { sessionId });
-    // });
-
-    // 创建一个对象来存储监控结果
 
     const monitorResults = {
         clicks: [],
@@ -225,13 +200,16 @@ export default async function handler(req, res) {
         return count === 1;
     }
     let count = 0;
-    let jsonData_1;
+    let jsonData_0;
     let jsonData_2;
-    for (const event of sortedData_new) {
+    let data = [];
 
+
+    async function handleEvent(event) {
         const { type, time } = event;
         console.log('event:', event);
         await new Promise(resolve => setTimeout(resolve, 2000));
+
         try {
             switch (type) {
                 case 'click':
@@ -249,7 +227,7 @@ export default async function handler(req, res) {
                             clickSelector = `//div[@data-v-3e50dd5e]//button[contains(@class, 'ivu-btn-primary') and span[text() ='${event.element.innerText}']]`;
                         }
                         else {
-                            clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}']`;
+                            clickSelector = `//${event.element.tagName.toLowerCase()}[text()='${event.element.innerText}'] | //${event.element.tagName.toLowerCase()}/span[text()='${event.element.innerText}']`;
                         }
                         isXPath_click = true;
                     }
@@ -422,7 +400,6 @@ export default async function handler(req, res) {
                         const timeoutId = setTimeout(() => {
                             reject(new Error('Timeout waiting for new page'));
                         }, 2000); // 设置超时时间为 5 秒
-
                         browser.once('targetcreated', async target => {
                             clearTimeout(timeoutId); // 如果 'targetcreated' 事件被触发，那么清除超时
                             if (target.type() === 'page') {
@@ -449,13 +426,6 @@ export default async function handler(req, res) {
                 case 'input':
                     let inputSelector;
                     let isXPath = false;
-                    // console.log('event.element.id:', event.element.id);
-                    // console.log('event.element.className:', event.element.className);
-                    // console.log('event.element.tagName:', event.element.tagName);
-                    // console.log('event.element.id_unique:', isUniqueAttribute('id', event,sortedData_new));
-                    // console.log('event.element.className_unique:', isUniqueAttribute('className', event, sortedData_new));
-                    // console.log('event.element.tagName_unique:', isUniqueAttribute('tagName', event,sortedData_new));
-
                     if (event.element.label && isUniqueAttribute('label', event, sortedData_new)) {
                         if (event.element.label === '要点说明1') {
                             inputSelector = `//label[normalize-space(text())='要点说明']/following-sibling::div//textarea`;
@@ -607,44 +577,60 @@ export default async function handler(req, res) {
 
                 case 'output':
                     if (event.element.leixing === '自定义1') {
-                        const data = await page.evaluate(() => {
-                            let reviewCountElement = document.querySelector('.rank .item');
-                            console.log('reviewCountElement:', reviewCountElement);
-                            const reviewCount = reviewCountElement ? reviewCountElement.innerText.trim() : document.querySelector('#reviewCount').innerText.trim();
-                            const address = reviewCountElement ? document.querySelector('.address .item').nextSibling.textContent.trim() : document.querySelector('#address').innerText.trim();
-                            const phone = reviewCountElement ? document.querySelector('.phone .item.J-phone-hide').innerText.trim() : document.querySelector('.tel').innerText.trim();
-                            return {
-                                review_count: reviewCount,
-                                address: address,
-                                phone: phone
-                            };
-                            // const items = [];
-                            // const itemElements = reviewCountElement ? document.querySelectorAll('.promotion .group .item') : document.querySelectorAll('.promosearch-wrapper .J-service-tuan');
+                        const newData = await page.evaluate(() => {
+                            return new Promise((resolve) => {
+                                setTimeout(() => {
+                                    const shopListContainer = document.querySelector('#shop-all-list');
+                                    const shops = [];
+                                    const shopList = shopListContainer.querySelectorAll('li');
+                                    shopList.forEach(shop => {
+                                        const nameElement = shop.querySelector('.tit h4');
+                                        const linkElement = shop.querySelector('.tit a');
+                                        const imgElement = shop.querySelector('.pic img');
+                                        const reviewElement = shop.querySelector('.review-num b');
+                                        const priceElement = shop.querySelector('.mean-price b');
+                                        const tagElements = shop.querySelectorAll('.tag-addr .tag');
+                                        const dealElements = shop.querySelectorAll('.si-deal a');
 
-                            // itemElements.forEach(item => {
-                            //     const title = item.querySelector('.title').innerText.trim();
-                            //     const price = item.querySelector('.price').innerText.trim();
-                            //     const delPrice = item.querySelector('.del-price').innerText.trim();
-                            //     const soldCount = item.querySelector('.sold-count').innerText.trim();
+                                        const name = nameElement ? nameElement.innerText.trim() : '';
+                                        const link = linkElement ? linkElement.href : '';
+                                        const image = imgElement ? imgElement.src : '';
+                                        const reviewCount = reviewElement ? reviewElement.innerText.trim() : '';
+                                        const price = priceElement ? priceElement.innerText.trim() : '';
 
-                            //     items.push({
-                            //         title,
-                            //         price,
-                            //         delPrice,
-                            //         soldCount
-                            //     });
-                            // });
-                            // return {
-                            //     review_count: reviewCount,
-                            //     address: address,
-                            //     phone: phone,
-                            //     items: items
-                            // };
+                                        const tags = [];
+                                        tagElements.forEach(tagElement => {
+                                            tags.push(tagElement.innerText.trim());
+                                        });
+
+                                        const deals = [];
+                                        dealElements.forEach(dealElement => {
+                                            deals.push({
+                                                title: dealElement.title,
+                                                link: dealElement.href
+                                            });
+                                        });
+
+                                        shops.push({
+                                            name,
+                                            link,
+                                            image,
+                                            review_count: reviewCount,
+                                            price,
+                                            tags,
+                                            deals
+                                        });
+                                    });
+
+                                    resolve(shops);
+                                }, 5000);
+                            });
                         });
 
                         // 将数据转换为 JSON 格式
-                        jsonData_1 = data;
-                        console.log('jsonData_1:', jsonData_1);
+                        console.log('newData:', newData);
+                        data.push(newData);
+                        // console.log('data:', data);
 
                     }
                     else if (event.element.leixing === '自定义2') {
@@ -670,6 +656,22 @@ export default async function handler(req, res) {
                         // 将数据转换为 JSON 格式
                         jsonData_2 = data;
                         console.log('jsonData_2:', jsonData_2);
+
+                    }
+
+                    else if (event.element.leixing === '自定义0') {
+                        const data = await page.evaluate(() => {
+                            const shops = [];
+                            const links = document.querySelectorAll('#region-nav a');
+                            let texts = Array.from(links).map(link => link.innerText);
+                            // 将数据转换为 JSON 格
+                            return texts;
+                        });
+
+                        // 将数据转换为 JSON 格式
+                        jsonData_0 = data;
+                        console.log('jsonData_0:', jsonData_0);
+
 
                     }
                     break;
@@ -708,34 +710,223 @@ export default async function handler(req, res) {
                 default:
                     break;
             }
-            count++;
         } catch (error) {
             console.error(`An error occurred in the ${type} case:`, error);
         }
-        // let cookies = await page.cookies();
-        // console.log("cookies_rcheck",cookies);
-        // 等待一定的时间以模拟真实的用户操作间隔
+    }
+
+    function getRandomInterval(min = 2000, max = 8000) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    for (const event of sortedData_new) {
+        const { type, time } = event;
+        console.log('event:', event);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            if (type === 'loop') {
+                for (let text of jsonData_0) {
+                    if (text === '西城区') {
+                        continue;
+                    }
+                    console.log('Processing text:', text);
+
+                    try {
+                        // 确保页面完全加载
+                        await page.goto(page.url(), { waitUntil: 'load', timeout: 60000 });
+                        console.log('Page loaded.');
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // 查找元素并捕获错误
+                        const foundLink_0 = await page.evaluate((text) => {
+                            try {
+                                let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                                let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                let linkElement = xpathResult.singleNodeValue;
+                                return linkElement !== null; // 返回是否找到链接
+                            } catch (error) {
+                                console.error('Error in evaluate for finding link:', error);
+                                return false;
+                            }
+                        }, text);
+
+                        if (foundLink_0) {
+                            console.log('Link found for text:', text);
+
+                            // 点击链接并等待导航完成，最多等待3秒钟
+                            await Promise.race([
+                                page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                                page.evaluate((text) => {
+                                    let xpath = `//a/span[text()='行政区'] | //a[text()='行政区']`;
+                                    let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    let linkElement = xpathResult.singleNodeValue;
+                                    if (linkElement) {
+                                        linkElement.click();
+                                    }
+                                }, text),
+                                new Promise(resolve => setTimeout(resolve, 3000))
+                            ]);
+
+                            console.log('Navigation completed or timeout for text:', text);
+
+                            // 获取总页数
+
+                        } else {
+                            console.log(`没有找到文本为 "${text}" 的链接`);
+                        }
+
+                        // 等待一定时间确保页面渲染完成
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // 查找元素并捕获错误
+                        const foundLink = await page.evaluate((text) => {
+                            try {
+                                let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+                                let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                let linkElement = xpathResult.singleNodeValue;
+                                return linkElement !== null; // 返回是否找到链接
+                            } catch (error) {
+                                console.error('Error in evaluate for finding link:', error);
+                                return false;
+                            }
+                        }, text);
+
+                        if (foundLink) {
+                            console.log('Link found for text:', text);
+
+                            // 点击链接并等待导航完成，最多等待3秒钟
+                            await Promise.race([
+                                page.waitForNavigation({ waitUntil: 'networkidle0' }),
+                                page.evaluate((text) => {
+                                    let xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
+                                    let xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                    let linkElement = xpathResult.singleNodeValue;
+                                    if (linkElement) {
+                                        linkElement.click();
+                                    }
+                                }, text),
+                                new Promise(resolve => setTimeout(resolve, 3000))
+                            ]);
+
+                            console.log('Navigation completed or timeout for text:', text);
+
+                            // 获取总页数
+                            const totalPageNumber = await page.evaluate(() => {
+                                let pageLinks = document.querySelectorAll('.page a');
+                                return pageLinks.length > 0 ? parseInt(pageLinks[pageLinks.length - 2].innerText) : 1;
+                            });
+
+                            console.log('Total page number:', totalPageNumber);
+
+                            const loopCount = totalPageNumber || 1;
+                            const loopEvents = event.loopEvents || [];
+                            const date = new Date();
+                            const dateString = date.toISOString().replace(/:/g, '-'); // 将时间中的冒号替换为短横线，因为冒号在文件名中是非法的
+                            const filename = `output_${dateString}.xlsx`;
+
+                            for (let i = 0; i < loopCount; i++) {
+                                for (const loopEvent of loopEvents) {
+                                    try {
+                                        await handleEvent(loopEvent);
+                                    } catch (error) {
+                                        console.error(`An error occurred in the loop event:`, error);
+                                    }
+                                }
+                                const allHeaders = new Set();
+                                function collectHeaders(data, prefix = '') {
+                                    Object.keys(data).forEach(key => {
+                                        const fullKey = prefix ? `${prefix}_${key}` : key;
+                                        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                            collectHeaders(data[key], fullKey);
+                                        } else {
+                                            allHeaders.add(fullKey);
+                                        }
+                                    });
+                                }
+                                // 遍历每个对象，收集所有可能的列名称
+                                data.forEach(dataArray => {
+                                    dataArray.forEach(data => {
+                                        collectHeaders(data);
+                                    });
+                                });
+
+                                // 将所有列名称转换为数组
+                                const allHeadersArray = Array.from(allHeaders);
+
+                                // 创建一个新的工作簿和工作表
+                                const workbook = new Workbook();
+                                const worksheet = workbook.addWorksheet('Sheet1');
+
+                                // 添加标题行
+                                worksheet.addRow(allHeadersArray);
+
+
+                                // 增加随机时间间隔
+
+                                // 遍历每个对象，并构建数据行
+                                data.forEach(dataArray => {
+                                    dataArray.forEach(data => {
+                                        const rowData = {};
+
+                                        function populateRowData(data, prefix = '') {
+                                            Object.keys(data).forEach(key => {
+                                                const fullKey = prefix ? `${prefix}_${key}` : key;
+                                                if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                                                    populateRowData(data[key], fullKey);
+                                                } else {
+                                                    rowData[fullKey] = data[key];
+                                                }
+                                            });
+                                        }
+
+                                        populateRowData(data);
+
+                                        // 添加数据行
+                                        const row = allHeadersArray.map(header => rowData[header] || '');
+                                        worksheet.addRow(row);
+                                    });
+                                });
+                                // 写入 Excel 文件
+                                await workbook.xlsx.writeFile(filename)
+                                    .then(() => {
+                                        console.log('Excel 文件已成功创建！');
+                                    })
+                                    .catch(error => {
+                                        console.error('创建 Excel 文件时出错：', error);
+                                    });
+                                console.log('保存成功');
+
+                                const randomInterval = getRandomInterval();
+                                console.log(`Waiting for ${randomInterval} milliseconds before next loop iteration`);
+                                await new Promise(resolve => setTimeout(resolve, randomInterval));
+
+                            }
+                        } else {
+                            console.log(`没有找到文本为 "${text}" 的链接`);
+                        }
+                    } catch (error) {
+                        console.error(`An error occurred while processing text "${text}":`, error);
+                    }
+                }
+            } else {
+                await handleEvent(event);
+            }
+        } catch (error) {
+            console.error(`An error occurred in the main loop:`, error);
+        }
+
+        // 等待下一事件的时间间隔
         const currentTime = new Date(time).getTime();
         const nextTime = sortedData[sortedData.indexOf(event) + 1] ? new Date(sortedData[sortedData.indexOf(event) + 1].time).getTime() : currentTime;
         const waitTime = Math.min(nextTime - currentTime, 2000);
         await new Promise(resolve => setTimeout(resolve, waitTime));
         console.log('check_5');
     }
-    const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
-    // const runoutput = {
-    //     ...jsonData_1,
-    //     ...jsonData_2
-    // };
-    const runoutput = {
-        ...jsonData_1
-    };
-    console.log('jsonData_1_f:', jsonData_1);
-    // console.log('jsonData_2_f:', jsonData_2);
-    console.log('runoutput:', runoutput);
 
+    const runresult = count === sortedData_new.length ? '成功执行' : `执行到第 ${count} 个 event 跳出了`;
+    console.log('data:', data);
 
     res.write(`\n${JSON.stringify({ monitorResults })}\n`);
-    res.write(`${JSON.stringify({ runoutput })}\n`);
     res.write(JSON.stringify({ runresult }));
     console.log('monitorResults_done');
     res.end()

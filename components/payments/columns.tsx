@@ -36,12 +36,17 @@ import { useExcelData } from '@/contexts/AppContext';
 
 
 const createColumnsFromData = () => {
-    const { excelData, shuruData_new } = useExcelData();
+    const { excelData} = useExcelData();
     if (!excelData || excelData.length === 0) {
         return [];
     }
+    
     // 假设 excelData 的第一行包含列名
-    const columnNames = (shuruData_new || []).length > 0 ? Object.keys(shuruData_new[0])  : excelData[0];
+    const obj = JSON.parse(excelData[0]);
+    const columnNames = Object.keys(obj[0]);
+
+    console.log(`excelData`, excelData);
+    console.log(`excelData[0]`, obj[0]);
     console.log(`columnNames`, columnNames);
 
     const columns = [

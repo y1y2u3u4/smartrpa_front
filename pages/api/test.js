@@ -194,7 +194,7 @@ const action = (async () => {
 // const xpath = "//button[text()='查询']";
 // const xpath = "//a[text()='好评']";
 // const xpath = "//a/span[text()='行政区']";
-const text='西城区'
+const text ='好评'
 const xpath = `//a/span[text()='${text}'] | //a[text()='${text}']`;
 const xpathResult = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 const linkElement = xpathResult.singleNodeValue;

@@ -5,32 +5,20 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useExcelData } from '@/contexts/AppContext';
 
 export function DemoPage() {
-    const { excelData, shuruData_new} = useExcelData(); 
-    console.log('shuruData_new', shuruData_new);
-    // const data = excelData
-    const data = (shuruData_new || []).length  > 0 ? shuruData_new : excelData;
-    // 选择 data 中的第2 行到第 10 行
-    const selectedData = (shuruData_new || []).length > 0 ? data : data.slice(1);
+    const { excelData } = useExcelData();
+    if (!excelData || excelData.length === 0) {
+        return [];
+    }
+    // console.log('excelData', excelData);
+
+    // 如果 data 为 null，设置 selectedData 和 columnNames 为默认的空数组
     // 选择 columns 中的前12 个
-    const selectedColumns = columns().slice(0, 100);
-    const columnNames = (shuruData_new || []).length > 0 ? Object.keys(shuruData_new[0]) : excelData[0];
-    console.log('selectedData', selectedData);
+    const selectedColumns = columns().filter(column => 'accessorKey' in column && column.accessorKey !== 'deals');
     console.log('selectedColumns', selectedColumns);
-    
-    const formattedData = (shuruData_new || []).length > 0 ? shuruData_new :
-        selectedData.map((item: any[], index: number) => {
-            const newItem: { [key: string]: any } = {};
 
-            columnNames.forEach((column: string, columnIndex: number) => {
-                if (item[columnIndex] !== null && item[columnIndex] !== undefined) {
-                    newItem[column] = item[columnIndex];
-                }
-            });
-
-            return newItem;
-        });
-    console.log('columnNames', columnNames);
+    const formattedData = excelData.map((item: string) => JSON.parse(item)).flat();
     console.log('formattedData', formattedData);
+    
     return (<div className="container mx-auto py-10">
         <DataTable columns={selectedColumns} data={formattedData} />
     </div>)
