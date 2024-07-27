@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useExcelData } from '@/contexts/AppContext';
 
 export function DemoPage() {
-    const { excelData } = useExcelData();
+    const { excelData, setShuruData_new } = useExcelData();
     if (!excelData || excelData.length === 0) {
         return [];
     }
@@ -18,6 +18,7 @@ export function DemoPage() {
 
     const formattedData = excelData.map((item: string) => JSON.parse(item)).flat();
     console.log('formattedData', formattedData);
+    setShuruData_new(formattedData)
     
     return (<div className="container mx-auto py-10">
         <DataTable columns={selectedColumns} data={formattedData} />

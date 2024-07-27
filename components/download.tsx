@@ -6,7 +6,7 @@ import { saveAs } from 'file-saver';
 function DownloadButton() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { excelData, shuruData, shuruData_new } = useExcelData();
-    const data = (shuruData_new || []).length > 0 ? shuruData_new : shuruData;
+    const data = shuruData_new;
 
     function downloadFile(selectedData: unknown[]) {
         // 获取选中行的数据
@@ -42,9 +42,9 @@ function DownloadButton() {
         event.preventDefault()
         downloadFile(data);
     };
-    useEffect(() => {
-        console.log('excelData', excelData);
-    }, [excelData, shuruData, shuruData_new]); // 依赖项数组中包含 excelData
+    // useEffect(() => {
+    //     console.log('excelData', excelData);
+    // }, [excelData, shuruData, shuruData_new]); // 依赖项数组中包含 excelData
 
 
     return (
