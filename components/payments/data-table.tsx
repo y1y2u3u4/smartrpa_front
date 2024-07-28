@@ -135,7 +135,7 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         if (JSON.stringify(prevSelectedRowsRef.current) !== JSON.stringify(selectedRows)) {
             const selectdata = getSelectedData();
-            setShuruData(selectdata);
+            // setShuruData(selectdata);
             console.log(`selectdata`, selectdata);
         }
         prevSelectedRowsRef.current = selectedRows;

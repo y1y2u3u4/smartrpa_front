@@ -7,6 +7,8 @@ type ExcelDataState = {
   setShuruData: Dispatch<SetStateAction<any>>;
   shuruData_new: any;
   setShuruData_new: Dispatch<SetStateAction<any>>;
+  shuruData_final: any;
+  setShuruData_final: Dispatch<SetStateAction<any>>;
   workflowData: any;
   setWorkflowData: Dispatch<SetStateAction<any>>;
   workflowData_final: any;
@@ -27,6 +29,8 @@ const ExcelDataContext = createContext<ExcelDataState>({
   setShuruData: () => { },
   shuruData_new: null,
   setShuruData_new: () => { },
+  shuruData_final: null,
+  setShuruData_final: () => { },
   workflowData: null,
   setWorkflowData: () => { },
   workflowData_final: null,
@@ -44,6 +48,7 @@ export const ExcelDataProvider = ({ children }: { children: React.ReactNode }) =
   const [excelData, setExcelData] = useState<any>(null);
   const [shuruData, setShuruData] = useState<any>(null);
   const [shuruData_new, setShuruData_new] = useState<any>(null);
+  const [shuruData_final, setShuruData_final] = useState<any>(null);
   const [workflowData, setWorkflowData] = useState<any>(null);
   const [workflowData_final, setWorkflowData_final] = useState<any>(null);
   const [workflowurl, setWorkflowurl] = useState<any>(null);
@@ -55,7 +60,7 @@ export const ExcelDataProvider = ({ children }: { children: React.ReactNode }) =
   // }, [excelData]); // 依赖项数组中包含 excelData
 
   return (
-    <ExcelDataContext.Provider value={{ excelData, setExcelData, shuruData, setShuruData, shuruData_new, setShuruData_new, workflowData, setWorkflowData, workflowData_final, setWorkflowData_final, workflowurl, setWorkflowurl, cityname, setCityname, keyword, setKeyword }}>
+    <ExcelDataContext.Provider value={{ excelData, setExcelData, shuruData, setShuruData, shuruData_new, setShuruData_new, shuruData_final, setShuruData_final, workflowData, setWorkflowData, workflowData_final, setWorkflowData_final, workflowurl, setWorkflowurl, cityname, setCityname, keyword, setKeyword }}>
       {children}
     </ExcelDataContext.Provider>
   );

@@ -5,10 +5,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useExcelData } from '@/contexts/AppContext';
 
 export function DemoPage() {
-    const { excelData, setShuruData_new } = useExcelData();
+    const { excelData, setShuruData_final } = useExcelData();
     if (!excelData || excelData.length === 0) {
         return [];
     }
+    
     // console.log('excelData', excelData);
 
     // 如果 data 为 null，设置 selectedData 和 columnNames 为默认的空数组
@@ -18,8 +19,10 @@ export function DemoPage() {
 
     const formattedData = excelData.map((item: string) => JSON.parse(item)).flat();
     console.log('formattedData', formattedData);
-    setShuruData_new(formattedData)
-    
+    // useEffect(() => {
+    //     setShuruData_final(formattedData);
+    // }, [formattedData]); 
+
     return (<div className="container mx-auto py-10">
         <DataTable columns={selectedColumns} data={formattedData} />
     </div>)

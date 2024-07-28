@@ -3,40 +3,76 @@ import { useEffect } from 'react';
 import { useExcelData } from '../contexts/AppContext';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { Workbook } from 'exceljs';
+
 function DownloadButton() {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { excelData, shuruData, shuruData_new } = useExcelData();
-    const data = shuruData_new;
+    const { excelData } = useExcelData();
 
-    function downloadFile(selectedData: unknown[]) {
-        // 获取选中行的数据
-
-        // 创建一个新的工作簿
-        const wb = XLSX.utils.book_new();
-
-        // 将数据转换为工作表
-        const ws = XLSX.utils.json_to_sheet(selectedData);
-
-        // 将工作表添加到工作簿
-        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-        // 将工作簿写入文件
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-        // 创建一个 Blob 对象
-        const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-
-        // 使用 file-saver 库保存文件
-        saveAs(blob, 'file.xlsx');
+    if (!excelData || excelData.length === 0) {
+        return null;
     }
 
-    // 将字符串转换为 ArrayBuffer
-    function s2ab(s: string) {
-        const buf = new ArrayBuffer(s.length);
-        const view = new Uint8Array(buf);
-        for (let i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
+    const data = excelData.map((item: string) => JSON.parse(item)).flat();
+
+    function downloadFile(selectedData: any[]) {
+        const allHeaders = new Set<string>();
+
+        function collectHeaders(data: any, prefix = '') {
+            if (data && typeof data === 'object') {
+                Object.keys(data).forEach(key => {
+                    const fullKey = prefix ? `${prefix}_${key}` : key;
+                    if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                        collectHeaders(data[key], fullKey);
+                    } else {
+                        allHeaders.add(fullKey);
+                    }
+                });
+            }
+        }
+
+        selectedData.forEach(data => {
+            collectHeaders(data);
+        });
+
+        const allHeadersArray = Array.from(allHeaders);
+
+        const workbook = new Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+
+        worksheet.addRow(allHeadersArray);
+
+        selectedData.forEach(data => {
+            const rowData: { [key: string]: any } = {};
+
+            function populateRowData(data: any, prefix = '') {
+                if (data && typeof data === 'object') {
+                    Object.keys(data).forEach(key => {
+                        const fullKey = prefix ? `${prefix}_${key}` : key;
+                        if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+                            populateRowData(data[key], fullKey);
+                        } else {
+                            rowData[fullKey] = data[key];
+                        }
+                    });
+                }
+            }
+
+            populateRowData(data);
+
+            const row = allHeadersArray.map(header => rowData[header] || '');
+            worksheet.addRow(row);
+        });
+
+        workbook.xlsx.writeBuffer().then((buffer) => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(blob, 'file.xlsx');
+        }).catch(error => {
+            console.error('创建 Excel 文件时出错：', error);
+        });
     }
+
+
 
     const handleClick = (event: React.MouseEvent) => {
         event.preventDefault()
